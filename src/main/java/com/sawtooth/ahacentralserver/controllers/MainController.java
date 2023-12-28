@@ -23,6 +23,8 @@ public class MainController {
 
         result.add(linkTo(methodOn(MainController.class).Main()).withSelfRel());
         result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("storage-server-put"));
+        result.add(linkTo(methodOn(RegistrationController.class).Register(null)).withRel("registration"));
+        result.add(linkTo(methodOn(LoginController.class).Login(null)).withRel("login"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

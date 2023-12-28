@@ -1,8 +1,11 @@
 package com.sawtooth.ahacentralserver.storage.repositories.storageserver;
 
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
+import com.sawtooth.ahacentralserver.models.storageserver.StorageServerMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+
+import java.util.List;
 
 public class StorageServerRepository implements IStorageServerRepository {
     private JdbcTemplate template;
@@ -16,5 +19,10 @@ public class StorageServerRepository implements IStorageServerRepository {
     public void Add(StorageServer storageServer) {
         template.queryForObject("SELECT * FROM add_storage_server(?, ?, ?)", new SingleColumnRowMapper<>(),
             storageServer.name(), storageServer.address(), storageServer.storageServerStatusID());
+    }
+
+    @Override
+    public List<StorageServer> Get() {
+        return template.query("SELECT * FROM get_storage_servers()", new StorageServerMapper());
     }
 }
