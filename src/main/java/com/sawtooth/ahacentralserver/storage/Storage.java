@@ -3,6 +3,8 @@ package com.sawtooth.ahacentralserver.storage;
 import com.sawtooth.ahacentralserver.storage.repositories.IRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.CustomerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.file.FileRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.file.IFileRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.StorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserverstatus.IStorageServerStatusRepository;
@@ -31,6 +33,7 @@ public class Storage implements IStorage {
         repositories.put(IStorageServerRepository.class.getName(), StorageServerRepository.class.getName());
         repositories.put(IStorageServerStatusRepository.class.getName(), StorageServerStatusRepository.class.getName());
         repositories.put(ICustomerRepository.class.getName(), CustomerRepository.class.getName());
+        repositories.put(IFileRepository.class.getName(), FileRepository.class.getName());
     }
 
     public <T extends IRepository> T GetRepository(Class<T> interfaceObject) throws InstantiationException{

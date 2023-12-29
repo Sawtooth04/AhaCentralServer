@@ -3,21 +3,17 @@ package com.sawtooth.ahacentralserver.controllers;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServerCondition;
 import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServersConditions;
-import com.sawtooth.ahacentralserver.models.storageserverstatus.StorageServerStatus;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserverstatus.IStorageServerStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
-import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -72,6 +68,7 @@ public class StorageServerController {
         StorageServersConditions result = new StorageServersConditions();
 
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("put"));
         try {
             List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
             for (StorageServer server : servers)
