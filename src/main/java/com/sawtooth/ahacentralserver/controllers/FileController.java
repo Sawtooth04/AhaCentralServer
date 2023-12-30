@@ -34,12 +34,13 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(FilePutModel model, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
+        int fileID;
 
         try {
-            fileUploader.Upload(model);
-            storage.GetRepository(IFileRepository.class).Put(new File(-1, storage.GetRepository(ICustomerRepository.class)
+            fileID = storage.GetRepository(IFileRepository.class).Put(new File(-1, storage.GetRepository(ICustomerRepository.class)
                 .Get(principal.getName()).customerID(),
                 model.file().getOriginalFilename(), model.path(), null, null));
+            fileUploader.Upload(model, fileID);
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
         catch (Exception exception) {

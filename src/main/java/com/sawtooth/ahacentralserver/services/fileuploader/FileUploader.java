@@ -1,9 +1,11 @@
 package com.sawtooth.ahacentralserver.services.fileuploader;
 
+import com.sawtooth.ahacentralserver.models.chunk.Chunk;
 import com.sawtooth.ahacentralserver.models.chunk.ChunkUploadModel;
 import com.sawtooth.ahacentralserver.models.file.FilePutModel;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import com.sawtooth.ahacentralserver.storage.IStorage;
+import com.sawtooth.ahacentralserver.storage.repositories.chunk.IChunkRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.RepresentationModel;
@@ -37,6 +39,10 @@ public class FileUploader implements IFileUploader {
         return (new String(Base64.getEncoder().encode(hash))).replaceAll("[/\\?%*:|\"<>.,;]", "");
     }
 
+    private void SaveChunk(int fileID, String name, int size, int sequenceNumber) throws InstantiationException {
+        storage.GetRepository(IChunkRepository.class).Put(new Chunk(-1, fileID, name, size, sequenceNumber));
+    }
+
     private void SendChunkToStorageServer(ChunkUploadModel chunkUploadModel, StorageServer server) {
         RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
             .retrieve().bodyToMono(RepresentationModel.class).block();
@@ -47,17 +53,17 @@ public class FileUploader implements IFileUploader {
     }
 
     @Override
-    public void Upload(FilePutModel model) throws IOException, InstantiationException, NoSuchAlgorithmException {
+    public void Upload(FilePutModel model, int fileID) throws IOException, InstantiationException, NoSuchAlgorithmException {
         List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
         InputStream stream = model.file().getInputStream();
-        int currentServerPointer = 0, chunkPointer = 0;
+        int currentServerPointer = 0, chunkPointer = 0, read;
+        ChunkUploadModel uploadModel;
         byte[] chunk = new byte[chunkSize];
 
-        while (stream.read(chunk, 0, chunkSize) > 0) {
-            SendChunkToStorageServer(new ChunkUploadModel(
-                GetChunkName(model, chunkPointer),
-                chunk
-            ), servers.get(currentServerPointer));
+        while ((read = stream.read(chunk, 0, chunkSize)) > 0) {
+            uploadModel = new ChunkUploadModel(GetChunkName(model, chunkPointer), chunk);
+            SendChunkToStorageServer(uploadModel, servers.get(currentServerPointer));
+            SaveChunk(fileID, uploadModel.name(), read, chunkPointer);
             chunkPointer++;
             currentServerPointer = (currentServerPointer >= servers.size() - 1) ? 0 : currentServerPointer + 1;
         }
