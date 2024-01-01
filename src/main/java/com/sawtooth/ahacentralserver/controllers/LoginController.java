@@ -54,7 +54,6 @@ public class LoginController {
             securityContext.setAuthentication(authentication);
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
-            Authentication authentication1 = SecurityContextHolder.getContext().getAuthentication();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).build());
         }
         catch (Exception e) {

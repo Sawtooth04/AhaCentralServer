@@ -2,10 +2,12 @@ package com.sawtooth.ahacentralserver.services.fileuploader;
 
 import com.sawtooth.ahacentralserver.models.chunk.Chunk;
 import com.sawtooth.ahacentralserver.models.chunk.ChunkUploadModel;
+import com.sawtooth.ahacentralserver.models.chunkstorageserver.ChunkStorageServer;
 import com.sawtooth.ahacentralserver.models.file.FilePutModel;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.chunk.IChunkRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.chunkstorageserver.IChunkStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.RepresentationModel;
@@ -17,8 +19,9 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FileUploader implements IFileUploader {
@@ -33,14 +36,19 @@ public class FileUploader implements IFileUploader {
     }
 
     private String GetChunkName(FilePutModel model, int chunkPointer) throws NoSuchAlgorithmException {
+        StringBuilder stringBuilder = new StringBuilder();
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(String.join("/", model.path(), model.file().getOriginalFilename(),
             Integer.toString(chunkPointer)).getBytes(StandardCharsets.UTF_8));
-        return (new String(Base64.getEncoder().encode(hash))).replaceAll("[/\\?%*:|\"<>.,;]", "");
+        for (byte value : hash)
+            stringBuilder.append(value);
+        return stringBuilder.toString();
     }
 
-    private void SaveChunk(int fileID, String name, int size, int sequenceNumber) throws InstantiationException {
-        storage.GetRepository(IChunkRepository.class).Put(new Chunk(-1, fileID, name, size, sequenceNumber));
+    private void SaveChunk(int fileID, String name, int size, int sequenceNumber, StorageServer server) throws InstantiationException {
+        int chunkID = storage.GetRepository(IChunkRepository.class).Put(new Chunk(-1, fileID, name, size, sequenceNumber));
+        storage.GetRepository(IChunkStorageServerRepository.class).Add(new ChunkStorageServer(
+            -1, chunkID, server.storageServerID()));
     }
 
     private void SendChunkToStorageServer(ChunkUploadModel chunkUploadModel, StorageServer server) {
@@ -63,7 +71,7 @@ public class FileUploader implements IFileUploader {
         while ((read = stream.read(chunk, 0, chunkSize)) > 0) {
             uploadModel = new ChunkUploadModel(GetChunkName(model, chunkPointer), chunk);
             SendChunkToStorageServer(uploadModel, servers.get(currentServerPointer));
-            SaveChunk(fileID, uploadModel.name(), read, chunkPointer);
+            SaveChunk(fileID, uploadModel.name(), read, chunkPointer, servers.get(currentServerPointer));
             chunkPointer++;
             currentServerPointer = (currentServerPointer >= servers.size() - 1) ? 0 : currentServerPointer + 1;
         }

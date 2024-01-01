@@ -1,7 +1,9 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.file.File;
+import com.sawtooth.ahacentralserver.models.file.FileComposeResult;
 import com.sawtooth.ahacentralserver.models.file.FilePutModel;
+import com.sawtooth.ahacentralserver.services.fileresourcecomposer.IFileResourceComposer;
 import com.sawtooth.ahacentralserver.services.fileuploader.IFileUploader;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
@@ -17,16 +19,21 @@ import org.springframework.web.bind.annotation.*;
 import java.security.Principal;
 import java.util.concurrent.CompletableFuture;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/file")
 public class FileController {
     private final IFileUploader fileUploader;
+    private final IFileResourceComposer fileResourceComposer;
     private final IStorage storage;
 
     @Autowired
-    public FileController(IFileUploader fileUploader, IStorage storage) {
+    public FileController(IFileUploader fileUploader, IStorage storage, IFileResourceComposer fileResourceComposer) {
         this.fileUploader = fileUploader;
         this.storage = storage;
+        this.fileResourceComposer = fileResourceComposer;
     }
 
     @PutMapping("/put")
@@ -46,5 +53,24 @@ public class FileController {
         catch (Exception exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
         }
+    }
+
+    @GetMapping("/compose")
+    @Async
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<FileComposeResult>> Compose(@RequestParam String path, @RequestParam String name) {
+        FileComposeResult result = new FileComposeResult();
+
+        result.add(linkTo(methodOn(FileController.class).Compose(null, null)).withSelfRel());
+        try {
+            if (fileResourceComposer.Compose(storage.GetRepository(IFileRepository.class).Get(path, name))) {
+                result.add(linkTo(methodOn(FileController.class).Compose(null, null)).withRel("file-get"));
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            }
+        }
+        catch (Exception exception) {
+            System.out.println(exception.getMessage());
+        }
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
     }
 }

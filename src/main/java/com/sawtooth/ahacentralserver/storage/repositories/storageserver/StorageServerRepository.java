@@ -1,5 +1,6 @@
 package com.sawtooth.ahacentralserver.storage.repositories.storageserver;
 
+import com.sawtooth.ahacentralserver.models.chunk.Chunk;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServerMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -24,5 +25,10 @@ public class StorageServerRepository implements IStorageServerRepository {
     @Override
     public List<StorageServer> Get() {
         return template.query("SELECT * FROM get_storage_servers()", new StorageServerMapper());
+    }
+
+    @Override
+    public List<StorageServer> GetByChunk(Chunk chunk) {
+        return template.query("SELECT * FROM get_storage_servers_by_chunk(?)", new StorageServerMapper(), chunk.chunkID());
     }
 }

@@ -1,8 +1,12 @@
 package com.sawtooth.ahacentralserver.storage.repositories.chunk;
 
 import com.sawtooth.ahacentralserver.models.chunk.Chunk;
+import com.sawtooth.ahacentralserver.models.chunk.ChunkMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
+
+import java.util.List;
+import java.util.Objects;
 
 public class ChunkRepository implements IChunkRepository {
     private JdbcTemplate template;
@@ -13,8 +17,13 @@ public class ChunkRepository implements IChunkRepository {
     }
 
     @Override
-    public void Put(Chunk chunk) {
-        template.queryForObject("SELECT * FROM put_chunk(?, ?, ?, ?)", new SingleColumnRowMapper<>(), chunk.fileID(),
-            chunk.name(), chunk.size(), chunk.sequenceNumber());
+    public int Put(Chunk chunk) {
+        return Objects.requireNonNull(template.queryForObject("SELECT * FROM put_chunk(?, ?, ?, ?)",
+            new SingleColumnRowMapper<>(), chunk.fileID(), chunk.name(), chunk.size(), chunk.sequenceNumber()));
+    }
+
+    @Override
+    public List<Chunk> GetByFile(int fileID) {
+        return template.query("SELECT * FROM get_file_chunks(?)", new ChunkMapper(), fileID);
     }
 }
