@@ -5,5 +5,5 @@ import com.sawtooth.ahacentralserver.models.file.File;
 import java.io.IOException;
 
 public interface IFileResourceComposer {
-    public boolean Compose(File file) throws InstantiationException, IOException;
+    public java.io.File Compose(File file) throws InstantiationException, IOException;
 }

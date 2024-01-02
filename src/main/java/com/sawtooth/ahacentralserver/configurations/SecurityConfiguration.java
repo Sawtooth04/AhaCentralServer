@@ -23,7 +23,7 @@ public class SecurityConfiguration {
             (authorize) -> authorize.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                 .requestMatchers("/api/registration/*").permitAll()
                 .requestMatchers("/api/login/*").permitAll()
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             ).csrf(csrf -> csrf
                 .ignoringRequestMatchers("/**")
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())

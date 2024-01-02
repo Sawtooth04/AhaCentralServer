@@ -19,7 +19,7 @@ public class AppConfiguration {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@Nonnull CorsRegistry registry) {
-                registry.addMapping("/**")
+                registry.addMapping("/xui")
                     .allowedOrigins(corsAllowedOrigins)
                     .allowCredentials(true)
                     .allowedMethods("GET", "POST", "PUT", "DELETE");

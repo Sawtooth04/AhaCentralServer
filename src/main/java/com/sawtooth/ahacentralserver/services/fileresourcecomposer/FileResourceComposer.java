@@ -71,7 +71,7 @@ public class FileResourceComposer implements IFileResourceComposer {
     }
 
     @Override
-    public boolean Compose(File file) throws InstantiationException, IOException {
+    public java.io.File Compose(File file) throws InstantiationException, IOException {
         List<Chunk> chunks = storage.GetRepository(IChunkRepository.class).GetByFile(file.fileID());
         List<Chunk> sequenceChunks;
         int sequenceNumber = 0;
@@ -86,10 +86,10 @@ public class FileResourceComposer implements IFileResourceComposer {
             sequenceChunks = GetChunksBySequenceNumber(chunks, sequenceNumber);
             for (Chunk chunk : sequenceChunks)
                 if (!TryDownloadChunk(tempFile, chunk, storage.GetRepository(IStorageServerRepository.class).GetByChunk(chunk)))
-                    return false;
+                    return null;
             sequenceNumber++;
         }
         while (!sequenceChunks.isEmpty());
-        return true;
+        return tempFile;
     }
 }
