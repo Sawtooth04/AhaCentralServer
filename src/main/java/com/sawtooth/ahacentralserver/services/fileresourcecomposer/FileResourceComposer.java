@@ -4,6 +4,7 @@ import com.sawtooth.ahacentralserver.models.chunk.Chunk;
 import com.sawtooth.ahacentralserver.models.chunk.ChunkDownloadModel;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
+import com.sawtooth.ahacentralserver.services.chunkdataprovider.IChunkDataProvider;
 import com.sawtooth.ahacentralserver.services.uribuilder.IUriBuilder;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.chunk.IChunkRepository;
@@ -26,54 +27,29 @@ public class FileResourceComposer implements IFileResourceComposer {
     @Value("${sys.temp.folder}")
     private String tempFolder;
     private final IStorage storage;
-    private final WebClient webClient;
-    private final IUriBuilder uriBuilder;
+    private final IChunkDataProvider chunkDataProvider;
 
     @Autowired
-    public FileResourceComposer(IStorage storage, WebClient webClient, IUriBuilder uriBuilder) {
+    public FileResourceComposer(IStorage storage, IChunkDataProvider chunkDataProvider) {
         this.storage = storage;
-        this.webClient = webClient;
-        this.uriBuilder = uriBuilder;
-    }
-
-    private ChunkDownloadModel TryDownloadChunkFromServer(Chunk chunk, StorageServer server) {
-        RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
-            .retrieve().bodyToMono(RepresentationModel.class).block();
-
-        if (links != null && links.getLink("chunk-get").isPresent())
-            try {
-                return webClient.get().uri(uriBuilder
-                    .Path(String.join("", server.address(), links.getLink("chunk-get").orElseThrow().getHref()))
-                    .Param("name", chunk.name())
-                    .Uri()).retrieve().bodyToMono(ChunkDownloadModel.class).block();
-            }
-            catch (Exception exception) {
-                return null;
-            }
-        return null;
+        this.chunkDataProvider = chunkDataProvider;
     }
 
     private boolean TryDownloadChunk(java.io.File tempFile, Chunk chunk, List<StorageServer> servers) throws IOException {
-        ChunkDownloadModel chunkDownloadModel;
+        ChunkDownloadModel chunkDownloadModel = chunkDataProvider.TryDownloadChunk(chunk, servers);
 
-        for (StorageServer server : servers)
-            if ((chunkDownloadModel = TryDownloadChunkFromServer(chunk, server)) != null) {
-                try (FileOutputStream output = new FileOutputStream(tempFile, true)) {
-                    output.write(chunkDownloadModel.getData(), 0, chunk.size());
-                }
-                return true;
+        if (chunkDownloadModel != null) {
+            try (FileOutputStream output = new FileOutputStream(tempFile, true)) {
+                output.write(chunkDownloadModel.getData(), 0, chunk.size());
             }
+            return true;
+        }
         return false;
-    }
-
-    private List<Chunk> GetChunksBySequenceNumber(List<Chunk> chunks, int sequenceNumber) {
-        return chunks.stream().filter(chunk -> chunk.sequenceNumber() == sequenceNumber).collect(Collectors.toList());
     }
 
     @Override
     public java.io.File Compose(File file) throws InstantiationException, IOException {
         List<Chunk> chunks = storage.GetRepository(IChunkRepository.class).GetByFile(file.fileID());
-        List<Chunk> sequenceChunks;
         int sequenceNumber = 0;
         Path root = Path.of(String.join("", tempFolder, file.path()));
         java.io.File tempFile = new java.io.File(String.join("/", root.toString(), file.name()));
@@ -83,13 +59,12 @@ public class FileResourceComposer implements IFileResourceComposer {
             Files.createFile(tempFile.toPath());
         }
         do {
-            sequenceChunks = GetChunksBySequenceNumber(chunks, sequenceNumber);
-            for (Chunk chunk : sequenceChunks)
-                if (!TryDownloadChunk(tempFile, chunk, storage.GetRepository(IStorageServerRepository.class).GetByChunk(chunk)))
-                    return null;
+            if (!TryDownloadChunk(tempFile, chunks.get(sequenceNumber), storage.GetRepository(IStorageServerRepository.class)
+                .GetByChunk(chunks.get(sequenceNumber))))
+                return null;
             sequenceNumber++;
         }
-        while (!sequenceChunks.isEmpty());
+        while (sequenceNumber < chunks.size());
         return tempFile;
     }
 }

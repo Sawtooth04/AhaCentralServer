@@ -3,39 +3,36 @@ package com.sawtooth.ahacentralserver.services.fileuploader;
 import com.sawtooth.ahacentralserver.models.chunk.Chunk;
 import com.sawtooth.ahacentralserver.models.chunk.ChunkUploadModel;
 import com.sawtooth.ahacentralserver.models.chunkstorageserver.ChunkStorageServer;
-import com.sawtooth.ahacentralserver.models.file.FilePutModel;
+import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
+import com.sawtooth.ahacentralserver.services.chunkdataprovider.IChunkDataProvider;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.chunk.IChunkRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.chunkstorageserver.IChunkStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class FileUploader implements IFileUploader {
     @Value("${file.chunk.size}")
     private int chunkSize;
-    private final WebClient webClient;
     private final IStorage storage;
+    private final IChunkDataProvider chunkDataProvider;
 
-    public FileUploader(WebClient webClient, IStorage storage) {
-        this.webClient = webClient;
+    public FileUploader(IStorage storage, IChunkDataProvider chunkDataProvider) {
         this.storage = storage;
+        this.chunkDataProvider = chunkDataProvider;
     }
 
-    private String GetChunkName(FilePutModel model, int chunkPointer) throws NoSuchAlgorithmException {
+    private String GetChunkName(FileUploadModel model, int chunkPointer) throws NoSuchAlgorithmException {
         StringBuilder stringBuilder = new StringBuilder();
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] hash = digest.digest(String.join("/", model.path(), model.file().getOriginalFilename(),
@@ -51,17 +48,8 @@ public class FileUploader implements IFileUploader {
             -1, chunkID, server.storageServerID()));
     }
 
-    private void SendChunkToStorageServer(ChunkUploadModel chunkUploadModel, StorageServer server) {
-        RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
-            .retrieve().bodyToMono(RepresentationModel.class).block();
-
-        if (links != null && links.getLink("chunk-put").isPresent())
-            webClient.put().uri(String.join("", server.address(), links.getLink("chunk-put").get().getHref()))
-                .bodyValue(chunkUploadModel).retrieve().bodyToMono(RepresentationModel.class).block();
-    }
-
     @Override
-    public void Upload(FilePutModel model, int fileID) throws IOException, InstantiationException, NoSuchAlgorithmException {
+    public boolean Upload(FileUploadModel model, int fileID) throws IOException, InstantiationException, NoSuchAlgorithmException {
         List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
         InputStream stream = model.file().getInputStream();
         int currentServerPointer = 0, chunkPointer = 0, read;
@@ -70,10 +58,12 @@ public class FileUploader implements IFileUploader {
 
         while ((read = stream.read(chunk, 0, chunkSize)) > 0) {
             uploadModel = new ChunkUploadModel(GetChunkName(model, chunkPointer), chunk);
-            SendChunkToStorageServer(uploadModel, servers.get(currentServerPointer));
+            if (!chunkDataProvider.TryPutChunk(uploadModel, servers, currentServerPointer))
+                return false;
             SaveChunk(fileID, uploadModel.name(), read, chunkPointer, servers.get(currentServerPointer));
             chunkPointer++;
             currentServerPointer = (currentServerPointer >= servers.size() - 1) ? 0 : currentServerPointer + 1;
         }
+        return true;
     }
 }
