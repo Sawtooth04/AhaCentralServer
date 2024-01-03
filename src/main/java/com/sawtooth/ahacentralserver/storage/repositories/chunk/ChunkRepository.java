@@ -26,4 +26,9 @@ public class ChunkRepository implements IChunkRepository {
     public List<Chunk> GetByFile(int fileID) {
         return template.query("SELECT * FROM get_file_chunks(?)", new ChunkMapper(), fileID);
     }
+
+    @Override
+    public void Delete(Chunk chunk) {
+        template.queryForObject("SELECT * FROM delete_chunk(?)", new SingleColumnRowMapper<>(), chunk.chunkID());
+    }
 }

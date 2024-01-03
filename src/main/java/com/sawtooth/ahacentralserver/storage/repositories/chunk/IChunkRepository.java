@@ -9,4 +9,6 @@ public interface IChunkRepository extends IRepository {
     public int Put(Chunk chunk);
 
     public List<Chunk> GetByFile(int fileID);
+
+    public void Delete(Chunk chunk);
 }

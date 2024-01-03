@@ -7,4 +7,6 @@ public interface IFileRepository extends IRepository {
     public int Put(File file);
 
     public File Get(String path, String name);
+
+    public void Delete(File file);
 }

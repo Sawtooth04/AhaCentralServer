@@ -79,4 +79,34 @@ public class ChunkDataProvider implements IChunkDataProvider {
         }
         return attempts < servers.size();
     }
+
+    @Override
+    public boolean TryDeleteChunkFromStorageServer(Chunk chunk, StorageServer server) {
+        try {
+            RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
+                .retrieve().bodyToMono(RepresentationModel.class).block();
+
+            if (links != null && links.getLink("chunk-delete").isPresent()) {
+                webClient.delete().uri(uriBuilder
+                    .Path(String.join("", server.address(), links.getLink("chunk-delete").orElseThrow().getHref()))
+                    .Param("name", chunk.name())
+                    .Uri()
+                ).retrieve().bodyToMono(RepresentationModel.class).block();
+                return true;
+            }
+            return false;
+        }
+        catch (Exception exception) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean TryDeleteChunk(Chunk chunk, List<StorageServer> servers) {
+        boolean result = true;
+
+        for (StorageServer server : servers)
+            result &= TryDeleteChunkFromStorageServer(chunk, server);
+        return result;
+    }
 }

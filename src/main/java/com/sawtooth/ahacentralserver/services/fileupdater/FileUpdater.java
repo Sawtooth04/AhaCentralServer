@@ -23,7 +23,6 @@ public class FileUpdater implements IFileUpdater {
     private final IStorage storage;
     private final IChunkDataProvider chunkDataProvider;
 
-
     public FileUpdater(IStorage storage, IChunkDataProvider chunkDataProvider) {
         this.storage = storage;
         this.chunkDataProvider = chunkDataProvider;

@@ -25,4 +25,9 @@ public class FileRepository implements IFileRepository {
     public File Get(String path, String name) {
         return template.queryForObject("SELECT * FROM get_file(?, ?)", new FileMapper(), path, name);
     }
+
+    @Override
+    public void Delete(File file) {
+        template.queryForObject("SELECT * FROM delete_file(?)", new SingleColumnRowMapper<>(), file.fileID());
+    }
 }
