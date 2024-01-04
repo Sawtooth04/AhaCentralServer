@@ -101,7 +101,7 @@ public class FileController {
 
         try {
             file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
-            if (fileDeleter.Delete(file))
+            if (fileUpdater.Update(model, file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
         catch (EmptyResultDataAccessException exception) {
@@ -116,7 +116,7 @@ public class FileController {
     @DeleteMapping("/delete/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(HttpServletRequest req) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest req) {
         RepresentationModel<?> result = new RepresentationModel<>();
         String path = GetFilePath((String) req.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE),
             "/api/file/delete"), name = GetFileName((String) req.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
@@ -124,10 +124,9 @@ public class FileController {
 
         try {
             file = storage.GetRepository(IFileRepository.class).Get(path.isEmpty() ? "/" : path, name);
-            if (fileDeleter.Delete(file)) {
-                storage.GetRepository(IFileRepository.class).Delete(file);
+            storage.GetRepository(IFileRepository.class).Delete(file);
+            if (fileDeleter.Delete(file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
-            }
         }
         catch (EmptyResultDataAccessException exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(result));

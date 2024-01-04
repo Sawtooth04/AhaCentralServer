@@ -17,6 +17,11 @@ public class ChunkRepository implements IChunkRepository {
     }
 
     @Override
+    public Chunk GetByName(String name) {
+        return template.queryForObject("SELECT * FROM get_chunk_by_name(?)", new ChunkMapper(), name);
+    }
+
+    @Override
     public int Put(Chunk chunk) {
         return Objects.requireNonNull(template.queryForObject("SELECT * FROM put_chunk(?, ?, ?, ?)",
             new SingleColumnRowMapper<>(), chunk.fileID(), chunk.name(), chunk.size(), chunk.sequenceNumber()));

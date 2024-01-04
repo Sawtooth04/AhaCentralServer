@@ -26,6 +26,7 @@ public class MainController {
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("storage-servers-conditions"));
         result.add(linkTo(methodOn(RegistrationController.class).Register(null)).withRel("registration"));
         result.add(linkTo(methodOn(LoginController.class).Login(null, null)).withRel("login"));
+        result.add(linkTo(methodOn(ChunkController.class).Synchronize(null, null)).withRel("chunk-sync"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

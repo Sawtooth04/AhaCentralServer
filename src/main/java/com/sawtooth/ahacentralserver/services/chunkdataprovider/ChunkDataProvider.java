@@ -1,8 +1,6 @@
 package com.sawtooth.ahacentralserver.services.chunkdataprovider;
 
-import com.sawtooth.ahacentralserver.models.chunk.Chunk;
-import com.sawtooth.ahacentralserver.models.chunk.ChunkDownloadModel;
-import com.sawtooth.ahacentralserver.models.chunk.ChunkUploadModel;
+import com.sawtooth.ahacentralserver.models.chunk.*;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import com.sawtooth.ahacentralserver.services.uribuilder.IUriBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ChunkDataProvider implements IChunkDataProvider {
@@ -81,6 +80,12 @@ public class ChunkDataProvider implements IChunkDataProvider {
     }
 
     @Override
+    public void TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers) {
+        for (StorageServer server : servers)
+            TryPutChunkToStorageServer(chunkUploadModel, server);
+    }
+
+    @Override
     public boolean TryDeleteChunkFromStorageServer(Chunk chunk, StorageServer server) {
         try {
             RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
@@ -108,5 +113,36 @@ public class ChunkDataProvider implements IChunkDataProvider {
         for (StorageServer server : servers)
             result &= TryDeleteChunkFromStorageServer(chunk, server);
         return result;
+    }
+
+    @Override
+    public ChunkLastModified TryGetLastModifiedTimestampFromStorageServer(Chunk chunk, StorageServer server) {
+        try {
+            RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
+                .retrieve().bodyToMono(RepresentationModel.class).block();
+
+            if (links != null && links.getLink("chunk-modified-get").isPresent()) {
+                return new ChunkLastModified(Objects.requireNonNull(webClient.get().uri(uriBuilder
+                    .Path(String.join("", server.address(), links.getLink("chunk-modified-get").orElseThrow().getHref()))
+                    .Param("name", chunk.name())
+                    .Uri()
+                ).retrieve().bodyToMono(ChunkLastModifiedResponse.class).block()).getLastModified(), server);
+            }
+            return null;
+        }
+        catch (Exception exception) {
+            return null;
+        }
+    }
+
+    @Override
+    public ChunkLastModified TryGetLastModifiedTimestamp(Chunk chunk, List<StorageServer> servers) {
+        ChunkLastModified lastModified = new ChunkLastModified(0L, null), response;
+
+        for (StorageServer server : servers) {
+            response = TryGetLastModifiedTimestampFromStorageServer(chunk, server);
+            lastModified = (response != null && response.lastModified() > lastModified.lastModified()) ? response : lastModified;
+        }
+        return lastModified;
     }
 }
