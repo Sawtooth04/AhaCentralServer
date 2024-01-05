@@ -18,6 +18,7 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
@@ -45,12 +46,15 @@ public class FileController {
         this.fileDeleter = fileDeleter;
     }
 
-    private String GetFilePath(String request, String mapping) {
-        return request.replace(mapping, "").replaceAll("(/[^/]*)$", "");
+    private String GetFilePath(HttpServletRequest request, String mapping) {
+        String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
+            .replace(mapping, "").replaceAll("(/[^/]*)$", "");
+        return path.isEmpty() ? "/" : path;
     }
 
-    private String GetFileName(String request) {
-        return request.replaceAll("(.*/)", "");
+    private String GetFileName(HttpServletRequest request) {
+        return ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
+            .replaceAll("(.*/)", "");
     }
 
     @PutMapping("/put")
@@ -74,10 +78,17 @@ public class FileController {
     }
 
     @GetMapping("/get")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<?>> Get() {
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
+    }
+
+    @GetMapping("/get/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<Resource>> Get(@RequestParam String path, @RequestParam String name) {
+    public CompletableFuture<ResponseEntity<Resource>> Get(HttpServletRequest request) {
         java.io.File tempFile;
+        String path = GetFilePath(request, "/api/file/get"), name = GetFileName(request);
 
         try {
             if ((tempFile = fileResourceComposer.Compose(storage.GetRepository(IFileRepository.class).Get(path, name))) != null) {
@@ -113,13 +124,18 @@ public class FileController {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
     }
 
+    @GetMapping("/delete")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<?>> Delete() {
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
+    }
+
     @DeleteMapping("/delete/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest req) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest request) {
         RepresentationModel<?> result = new RepresentationModel<>();
-        String path = GetFilePath((String) req.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE),
-            "/api/file/delete"), name = GetFileName((String) req.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE));
+        String path = GetFilePath(request, "/api/file/delete"), name = GetFileName(request);
         File file;
 
         try {

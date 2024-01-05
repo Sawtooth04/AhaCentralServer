@@ -46,6 +46,7 @@ public class StorageServerController {
 
     @PutMapping("/put")
     @Async
+    @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(@RequestBody StorageServer model) {
         RepresentationModel<?> result = new RepresentationModel<>();
 

@@ -4,17 +4,22 @@ import com.sawtooth.ahacentralserver.models.chunk.*;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import com.sawtooth.ahacentralserver.services.uribuilder.IUriBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class ChunkDataProvider implements IChunkDataProvider {
     private final WebClient webClient;
     private final IUriBuilder uriBuilder;
+    @Value("${sys.pool.max-threads-count}")
+    private int poolThreadsCount;
 
     @Autowired
     public ChunkDataProvider(WebClient webClient, IUriBuilder uriBuilder) {
@@ -81,8 +86,11 @@ public class ChunkDataProvider implements IChunkDataProvider {
 
     @Override
     public void TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers) {
+        ExecutorService threadPool = Executors.newFixedThreadPool(poolThreadsCount);
+
         for (StorageServer server : servers)
-            TryPutChunkToStorageServer(chunkUploadModel, server);
+            threadPool.submit(() -> { TryPutChunkToStorageServer(chunkUploadModel, server); });
+        threadPool.shutdown();
     }
 
     @Override
