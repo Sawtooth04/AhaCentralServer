@@ -28,6 +28,11 @@ public class StorageServerRepository implements IStorageServerRepository {
     }
 
     @Override
+    public List<StorageServer> GetBackup() {
+        return template.query("SELECT * FROM get_backup_servers()", new StorageServerMapper());
+    }
+
+    @Override
     public StorageServer Get(String address) {
         return template.queryForObject("SELECT * FROM get_storage_server(?)", new StorageServerMapper(), address);
     }

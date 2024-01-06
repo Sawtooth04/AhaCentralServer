@@ -12,9 +12,9 @@ public interface IChunkDataProvider {
 
     public boolean TryPutChunkToStorageServer(ChunkUploadModel chunkUploadModel, StorageServer server);
 
-    public boolean TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers, int preferredServerPointer);
+    public ChunkTryPutResponse TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers, int preferredServerPointer);
 
-    public void TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers);
+    public boolean TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers);
 
     public boolean TryDeleteChunkFromStorageServer(Chunk chunk, StorageServer server);
 

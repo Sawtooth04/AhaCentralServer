@@ -74,23 +74,30 @@ public class ChunkDataProvider implements IChunkDataProvider {
     }
 
     @Override
-    public boolean TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers, int preferredServerPointer) {
+    public ChunkTryPutResponse TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers, int preferredServerPointer) {
         int attempts = 0, i = preferredServerPointer;
 
         while (!TryPutChunkToStorageServer(chunkUploadModel, servers.get(i)) && attempts < servers.size()) {
             attempts++;
             i = (i >= servers.size() - 1) ? 0 : i + 1;
         }
-        return attempts < servers.size();
+        return new ChunkTryPutResponse(attempts < servers.size(), servers.get(i));
     }
 
     @Override
-    public void TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers) {
+    public boolean TryPutChunk(ChunkUploadModel chunkUploadModel, List<StorageServer> servers) {
         ExecutorService threadPool = Executors.newFixedThreadPool(poolThreadsCount);
+        ChunkPutLock lock = new ChunkPutLock();
 
         for (StorageServer server : servers)
-            threadPool.submit(() -> { TryPutChunkToStorageServer(chunkUploadModel, server); });
+            threadPool.submit(() -> {
+                boolean isPut = TryPutChunkToStorageServer(chunkUploadModel, server);
+                synchronized (lock) {
+                    lock.result |= isPut;
+                }
+            });
         threadPool.shutdown();
+        return lock.result;
     }
 
     @Override
@@ -116,10 +123,10 @@ public class ChunkDataProvider implements IChunkDataProvider {
 
     @Override
     public boolean TryDeleteChunk(Chunk chunk, List<StorageServer> servers) {
-        boolean result = true;
+        boolean result = false;
 
         for (StorageServer server : servers)
-            result &= TryDeleteChunkFromStorageServer(chunk, server);
+            result |= TryDeleteChunkFromStorageServer(chunk, server);
         return result;
     }
 
