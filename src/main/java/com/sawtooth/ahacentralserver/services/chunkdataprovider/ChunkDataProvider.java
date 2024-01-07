@@ -6,9 +6,13 @@ import com.sawtooth.ahacentralserver.services.uribuilder.IUriBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.core.publisher.Mono;
 
+import javax.management.ServiceNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -159,5 +163,28 @@ public class ChunkDataProvider implements IChunkDataProvider {
             lastModified = (response != null && response.lastModified() > lastModified.lastModified()) ? response : lastModified;
         }
         return lastModified;
+    }
+
+    @Override
+    public boolean TryGetIsExistsChunk(Chunk chunk, StorageServer server) {
+        RepresentationModel<?> links = webClient.get().uri(String.join("", server.address(), "/api/"))
+            .retrieve().bodyToMono(RepresentationModel.class).block();
+
+        try {
+            if (links != null && links.getLink("chunk-exists-get").isPresent()) {
+                webClient.get().uri(uriBuilder
+                    .Path(String.join("", server.address(), links.getLink("chunk-exists-get").orElseThrow().getHref()))
+                    .Param("name", chunk.name())
+                    .Uri()
+                ).retrieve()
+                .bodyToMono(RepresentationModel.class).block();
+                return true;
+            }
+        }
+        catch (WebClientResponseException.NotFound exception) {
+            return false;
+        }
+
+        return false;
     }
 }

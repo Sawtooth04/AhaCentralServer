@@ -11,6 +11,8 @@ public interface IStorageServerRepository extends IRepository {
 
     public List<StorageServer> Get();
 
+    public StorageServer Get(int storageServerID);
+
     public List<StorageServer> GetBackup();
 
     public StorageServer Get(String address);

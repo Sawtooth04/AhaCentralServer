@@ -23,4 +23,6 @@ public interface IChunkDataProvider {
     public ChunkLastModified TryGetLastModifiedTimestampFromStorageServer(Chunk chunk, StorageServer server);
 
     public ChunkLastModified TryGetLastModifiedTimestamp(Chunk chunk, List<StorageServer> servers);
+
+    public boolean TryGetIsExistsChunk(Chunk chunk, StorageServer server);
 }

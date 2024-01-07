@@ -2,9 +2,11 @@ package com.sawtooth.ahacentralserver.storage.repositories.chunk;
 
 import com.sawtooth.ahacentralserver.models.chunk.Chunk;
 import com.sawtooth.ahacentralserver.models.chunk.ChunkMapper;
+import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,6 +32,17 @@ public class ChunkRepository implements IChunkRepository {
     @Override
     public List<Chunk> GetByFile(int fileID) {
         return template.query("SELECT * FROM get_file_chunks(?)", new ChunkMapper(), fileID);
+    }
+
+    @Override
+    public List<Chunk> GetByStorageServer(StorageServer server, int start, int count) {
+        try {
+            return template.query("SELECT * FROM get_chunks_of_storage_server(?, ?, ?)", new ChunkMapper(),
+                server.storageServerID(), start, count);
+        }
+        catch (Exception exception) {
+            return new ArrayList<>();
+        }
     }
 
     @Override

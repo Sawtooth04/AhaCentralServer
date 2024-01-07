@@ -1,7 +1,9 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.chunk.ChunkSynchronizationModel;
+import com.sawtooth.ahacentralserver.models.chunk.ChunkUploadMissingModel;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
+import com.sawtooth.ahacentralserver.services.chunkmissinguploader.IChunkMissingUploader;
 import com.sawtooth.ahacentralserver.services.chunksynchronizer.IChunkSynchronizer;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
@@ -20,11 +22,13 @@ import java.util.concurrent.CompletableFuture;
 public class ChunkController {
     private final IStorage storage;
     private final IChunkSynchronizer chunkSynchronizer;
+    private final IChunkMissingUploader chunkMissingUploader;
 
     @Autowired
-    public ChunkController(IStorage storage, IChunkSynchronizer chunkSynchronizer) {
+    public ChunkController(IStorage storage, IChunkSynchronizer chunkSynchronizer, IChunkMissingUploader chunkMissingUploader) {
         this.storage = storage;
         this.chunkSynchronizer = chunkSynchronizer;
+        this.chunkMissingUploader = chunkMissingUploader;
     }
 
     @PostMapping("/synchronize")
@@ -39,6 +43,24 @@ public class ChunkController {
             server = storage.GetRepository(IStorageServerRepository.class).Get(String.join(":",
                 request.getRemoteAddr(), Integer.toString(model.port())));
             if (chunkSynchronizer.Synchronize(model, server))
+                return CompletableFuture.completedFuture(ResponseEntity.ok(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+        }
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+    }
+
+    @PostMapping("/upload-missing")
+    @Async
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> UploadMissing(@RequestBody ChunkUploadMissingModel model) {
+        StorageServer server;
+        RepresentationModel<?> result = new RepresentationModel<>();
+
+        try {
+            server = storage.GetRepository(IStorageServerRepository.class).Get(model.serverID());
+            if (chunkMissingUploader.UploadMissing(server))
                 return CompletableFuture.completedFuture(ResponseEntity.ok(result));
         }
         catch (Exception exception) {

@@ -52,17 +52,9 @@ public class FileUpdater implements IFileUpdater {
     private boolean TryUpdateChunk(Chunk chunk, byte[] data, List<StorageServer> servers, int serverPointer) throws InstantiationException {
         List<StorageServer> chunkServers = storage.GetRepository(IStorageServerRepository.class).GetByChunk(chunk);
         ChunkUploadModel chunkUploadModel = new ChunkUploadModel(chunk.name(), data);
-        ChunkTryPutResponse tryPutResponse;
 
-        if (!chunkDataProvider.TryPutChunk(chunkUploadModel, chunkServers)) {
-            if (!(tryPutResponse = chunkDataProvider.TryPutChunk(chunkUploadModel, servers, serverPointer)).result())
-                return false;
-            else {
-                storage.GetRepository(IChunkStorageServerRepository.class).Add(new ChunkStorageServer(-1,
-                    chunk.chunkID(), tryPutResponse.server().storageServerID()));
-                return true;
-            }
-        }
+        if (!chunkDataProvider.TryPutChunk(chunkUploadModel, chunkServers))
+            return chunkDataProvider.TryPutChunk(chunkUploadModel, servers, serverPointer).result();
         return true;
     }
 
