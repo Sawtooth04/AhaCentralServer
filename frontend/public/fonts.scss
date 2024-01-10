@@ -1,0 +1,43 @@
+@font-face {
+  font-family: 'TTNormsPro';
+  font-style: normal;
+  font-weight: normal;
+  src: local('TTNormsPro'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Regular.woff2') format('woff2'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Regular.woff') format('woff'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Regular.ttf') format('ttf'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Regular.eot') format('eot');
+}
+
+@font-face {
+  font-family: 'TTNormsPro SemiBold';
+  font-style: normal;
+  font-weight: normal;
+  src: local('TTNormsPro SemiBold'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Medium.woff2') format('woff2'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Medium.woff') format('woff'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Medium.ttf') format('ttf'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Medium.eot') format('eot');
+}
+
+@font-face {
+  font-family: 'TTNormsPro Light';
+  font-style: normal;
+  font-weight: normal;
+  src: local('TTNormsPro Light'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Light.woff2') format('woff2'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Light.woff') format('woff'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Light.ttf') format('ttf'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Light.eot') format('eot');
+}
+
+@font-face {
+  font-family: 'TTNormsPro';
+  font-style: normal;
+  font-weight: bold;
+  src: local('TTNormsPro'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Bold.woff2') format('woff2'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Bold.woff') format('woff'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Bold.ttf') format('ttf'),
+  url('/assets/fonts/TTNormsPro/TTNormsPro-Bold.eot') format('eot');
+}

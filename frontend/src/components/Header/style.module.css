@@ -1,0 +1,15 @@
+.header {
+  display: flex;
+  align-items: center;
+  width: 97%;
+  height: 7.4%;
+  padding: 0 1.5%;
+  background-color: #464D5C;
+}
+
+.headerLogo {
+  width: auto;
+  height: 62.5%;
+}
+
+/*# sourceMappingURL=style.module.css.map */

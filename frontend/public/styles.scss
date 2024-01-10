@@ -1,0 +1,19 @@
+@import "fonts";
+
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+
+  & #root {
+    width: 100%;
+    height: 100%;
+
+    & .App {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 100%;
+    }
+  }
+}
