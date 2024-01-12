@@ -1,0 +1,30 @@
+@import "../../colors";
+
+.main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.mainHeading {
+    margin: 2% 0 2% 2%;
+    font-family: "TTNormsPro SemiBold", "sans-serif";
+    font-weight: normal;
+    font-size: 24px;
+}
+
+.mainText {
+    margin: 0 0 0.64% 2%;
+    font-family: "TTNormsPro", "sans-serif";
+    font-size: 18px;
+}
+
+.main::-webkit-scrollbar{
+    width: 1vw;
+}
+
+.main::-webkit-scrollbar-thumb {
+    background-color: $border_color;
+    border-radius: 0.5vw;
+}
