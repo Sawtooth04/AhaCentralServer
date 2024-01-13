@@ -49,4 +49,9 @@ public class ChunkRepository implements IChunkRepository {
     public void Delete(Chunk chunk) {
         template.queryForObject("SELECT * FROM delete_chunk(?)", new SingleColumnRowMapper<>(), chunk.chunkID());
     }
+
+    @Override
+    public long Count() {
+        return Objects.requireNonNull(template.queryForObject("SELECT * FROM get_chunks_count()", Long.class));
+    }
 }

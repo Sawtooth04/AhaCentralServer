@@ -25,7 +25,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/login/*").permitAll()
                 .anyRequest().permitAll()
             ).csrf(csrf -> csrf
-                .ignoringRequestMatchers("/**")
+                /*.ignoringRequestMatchers("/**")*/
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             );
         return http.build();

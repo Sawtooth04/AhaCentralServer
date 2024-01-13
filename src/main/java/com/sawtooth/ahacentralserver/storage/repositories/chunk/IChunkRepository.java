@@ -16,4 +16,6 @@ public interface IChunkRepository extends IRepository {
     public List<Chunk> GetByStorageServer(StorageServer server, int start, int count);
 
     public void Delete(Chunk chunk);
+
+    public long Count();
 }

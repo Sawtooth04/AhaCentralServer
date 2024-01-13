@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 import java.util.List;
+import java.util.Objects;
 
 public class StorageServerRepository implements IStorageServerRepository {
     private JdbcTemplate template;
@@ -45,5 +46,17 @@ public class StorageServerRepository implements IStorageServerRepository {
     @Override
     public List<StorageServer> GetByChunk(Chunk chunk) {
         return template.query("SELECT * FROM get_storage_servers_by_chunk(?)", new StorageServerMapper(), chunk.chunkID());
+    }
+
+    @Override
+    public int StorageCount() {
+        return Objects.requireNonNull(template.queryForObject("SELECT * FROM get_storage_servers_count()",
+            new SingleColumnRowMapper<>()));
+    }
+
+    @Override
+    public int BackupCount() {
+        return Objects.requireNonNull(template.queryForObject("SELECT * FROM get_backup_servers_count()",
+            new SingleColumnRowMapper<>()));
     }
 }

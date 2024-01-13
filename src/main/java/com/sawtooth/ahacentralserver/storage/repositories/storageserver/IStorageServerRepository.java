@@ -18,4 +18,8 @@ public interface IStorageServerRepository extends IRepository {
     public StorageServer Get(String address);
 
     public List<StorageServer> GetByChunk(Chunk chunk);
+
+    public int StorageCount();
+
+    public int BackupCount();
 }
