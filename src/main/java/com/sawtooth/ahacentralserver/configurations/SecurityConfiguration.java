@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 @Configuration
 @EnableWebSecurity
@@ -25,7 +26,10 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/login/*").permitAll()
                 .anyRequest().permitAll()
             ).csrf(csrf -> csrf
-                /*.ignoringRequestMatchers("/**")*/
+                //TODO: Delete ignore csrf for prod
+                .ignoringRequestMatchers("/**")
+                //.ignoringRequestMatchers("/api/login/login", "/api/registration/register")
+                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             );
         return http.build();
