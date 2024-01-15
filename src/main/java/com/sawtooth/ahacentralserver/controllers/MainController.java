@@ -35,6 +35,7 @@ public class MainController {
         result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("storage-server-put"));
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("storage-servers-conditions"));
         result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("central-server-general"));
+        result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withRel("central-server-available-servers"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

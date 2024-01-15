@@ -1,8 +1,7 @@
 package com.sawtooth.ahacentralserver.controllers;
 
+import com.sawtooth.ahacentralserver.models.centralserver.AvailableStorageServers;
 import com.sawtooth.ahacentralserver.models.centralserver.General;
-import com.sawtooth.ahacentralserver.models.main.MainResponse;
-import com.sawtooth.ahacentralserver.models.storageserver.Space;
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServersSpace;
 import com.sawtooth.ahacentralserver.services.storageserversmanager.IStorageServersManager;
 import com.sawtooth.ahacentralserver.storage.IStorage;
@@ -18,6 +17,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.CompletableFuture;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/central-server")
@@ -47,6 +49,21 @@ public class CentralServerController {
             result.chunksCount = storage.GetRepository(IChunkRepository.class).Count();
             result.occupied = storageServersSpace.occupied();
             result.free = storageServersSpace.free();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+        }
+    }
+
+    @GetMapping("/storage-servers/available")
+    @Async
+    public CompletableFuture<ResponseEntity<AvailableStorageServers>> AvailableStorageServers() {
+        AvailableStorageServers result = new AvailableStorageServers();
+
+        try {
+            result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withSelfRel());
+            result.servers = storageServersManager.GetAvailableStorageServers();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
         catch (Exception exception) {

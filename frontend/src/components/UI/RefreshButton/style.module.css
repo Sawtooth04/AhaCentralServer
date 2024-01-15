@@ -1,0 +1,27 @@
+.refreshButton {
+  width: 1.9%;
+  margin-left: 0.85%;
+  border: none;
+  cursor: pointer;
+}
+
+.refreshButtonImage {
+  width: 100%;
+  height: auto;
+}
+
+.refreshButtonRotatingImage {
+  compose: refreshButtonImage;
+  animation: rotating 1000ms ease-out infinite;
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/*# sourceMappingURL=style.module.css.map */

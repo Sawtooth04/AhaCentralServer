@@ -11,6 +11,7 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,6 +40,17 @@ public class StorageServersManager implements IStorageServersManager {
         }
     }
 
+    private boolean PingStorageServer(StorageServer server) {
+        try {
+            webClient.head().uri(String.join("", server.address(), "/api/"))
+                .retrieve().bodyToMono(RepresentationModel.class).block();
+            return true;
+        }
+        catch (Exception exception) {
+            return false;
+        }
+    }
+
     @Override
     public StorageServersSpace GetStorageServersSpace() throws InstantiationException {
         List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
@@ -54,5 +66,17 @@ public class StorageServersManager implements IStorageServersManager {
             }
         }
         return new StorageServersSpace(free, total.Copy().Subtract(free).Divide(total).ToFloat());
+    }
+
+    @Override
+    public List<StorageServer> GetAvailableStorageServers() throws InstantiationException {
+        List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
+        List<StorageServer> result = new ArrayList<>();
+
+        servers.addAll(storage.GetRepository(IStorageServerRepository.class).GetBackup());
+        for (StorageServer server : servers)
+            if (PingStorageServer(server))
+                result.add(server);
+        return result;
     }
 }

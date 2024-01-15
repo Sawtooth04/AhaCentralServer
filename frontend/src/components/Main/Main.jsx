@@ -1,40 +1,49 @@
 import React, {useEffect, useState} from 'react';
 import styles from './style.module.css'
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
+import csrfFetch from "../../utils/CsrfFetch";
+import formatSpace from "../../utils/SpaceFormatter";
+import RefreshButton from "../UI/RefreshButton/RefreshButton";
 
 const Main = () => {
     const [general, setGeneral] = useState({});
+    const [storageServers, setStorageServers] = useState([]);
+
+    async function getGeneral() {
+        let response = await (await csrfFetch(await CentralServerLinksProvider.getLink('central-server-general'))).json();
+        setGeneral(response);
+    }
+
+    async function getStorageServers() {
+        let response = await (await csrfFetch(await CentralServerLinksProvider.getLink('central-server-available-servers'))).json();
+        setStorageServers(response.servers);
+    }
 
     useEffect(() => {
-        async function getGeneral() {
-            let response = await (await fetch(await CentralServerLinksProvider.getLink('central-server-general'))).json();
-            setGeneral(response);
+        async function getCentralServerData() {
+            await getGeneral();
+            await getStorageServers();
         }
 
-        void getGeneral();
+        void getCentralServerData();
     }, []);
 
     return (
         <div className={styles.main}>
-            <h1 className={styles.mainHeading}> Общее </h1>
+            <h1 className={styles.mainHeading}>
+                Общее
+                <RefreshButton onClick={() => {console.log("click")}}/>
+            </h1>
             <p className={styles.mainText}> Всего серверов хранения: {general.storageServersCount} </p>
             <p className={styles.mainText}> Всего бэкап-серверов: {general.backupServersCount} </p>
             <p className={styles.mainText}> Всего пользователей: {general.customersCount} </p>
             <p className={styles.mainText}> Всего чанков: {general.chunksCount} </p>
-            <p className={styles.mainText}> Объём доступных данных: 2345346 MB </p>
-            <p className={styles.mainText}> Занято: 15% (Доступно 2412342352 MB) </p>
-            <h1 className={styles.mainHeading}> Конфигурация центрального сервера </h1>
-            <p className={styles.mainText}> Какая-то инфа </p>
-            <p className={styles.mainText}> Какая-то инфа </p>
-            <p className={styles.mainText}> Какая-то инфа </p>
-            <p className={styles.mainText}> Какая-то инфа </p>
-            <p className={styles.mainText}> Какая-то инфа </p>
+            <p className={styles.mainText}> Объём доступных данных: {formatSpace(general.free)} </p>
+            <p className={styles.mainText}> Занято: {general.occupied ? general.occupied * 100 : 0}% </p>
             <h1 className={styles.mainHeading}> Доступные серверы хранения </h1>
-            <p className={styles.mainText}> Test-server: 192.168.1.104:8090 </p>
-            <p className={styles.mainText}> Test-server: 192.168.1.104:8090 </p>
-            <p className={styles.mainText}> Test-server: 192.168.1.104:8090 </p>
-            <p className={styles.mainText}> Test-server: 192.168.1.104:8090 </p>
-            <p className={styles.mainText}> Test-server: 192.168.1.104:8090 </p>
+            {storageServers.map(server => {
+                return <p className={styles.mainText} key={server.storageServerID}> {server.name}: {server.address} </p>
+            })}
         </div>
     );
 };
