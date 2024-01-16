@@ -1,10 +1,10 @@
 package com.sawtooth.ahacentralserver.storage.repositories.file;
 
-import com.sawtooth.ahacentralserver.models.file.File;
-import com.sawtooth.ahacentralserver.models.file.FileMapper;
+import com.sawtooth.ahacentralserver.models.file.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
+import java.util.List;
 import java.util.Objects;
 
 public class FileRepository implements IFileRepository {
@@ -29,5 +29,15 @@ public class FileRepository implements IFileRepository {
     @Override
     public void Delete(File file) {
         template.queryForObject("SELECT * FROM delete_file(?)", new SingleColumnRowMapper<>(), file.fileID());
+    }
+
+    @Override
+    public List<DirectoryItem> GetFiles(String path) {
+        return template.query("SELECT * FROM get_files(?)", new DirectoryFileMapper(), path);
+    }
+
+    @Override
+    public List<DirectoryItem> GetDirectories(String path) {
+        return template.query("SELECT * FROM get_directories(?)", new DirectoryFolderMapper(), path);
     }
 }

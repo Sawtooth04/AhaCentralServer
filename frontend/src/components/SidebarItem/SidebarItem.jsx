@@ -3,10 +3,10 @@ import styles from './style.module.css'
 import {useNavigate} from "react-router-dom";
 
 const SidebarItem = ({ link, text, src }) => {
-    //const navigate = useNavigate();
+    const navigate = useNavigate();
 
     function onClick() {
-        //navigate(link);
+        navigate(link);
     }
 
     return (

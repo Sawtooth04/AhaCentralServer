@@ -1,0 +1,46 @@
+.files {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.filesHeading {
+  display: flex;
+  align-items: flex-end;
+  margin: 2% 0 2% 2%;
+  font-family: "TTNormsPro SemiBold", "sans-serif";
+  font-weight: normal;
+  font-size: 24px;
+}
+
+.filesPathPartsWrapper {
+  display: flex;
+  align-items: center;
+  padding: 0 2% 0.5% 2%;
+  overflow-x: auto;
+  cursor: pointer;
+}
+.filesPathPartsWrapper::-webkit-scrollbar {
+  width: 0.5vw;
+  height: 0.5vw;
+}
+.filesPathPartsWrapper::-webkit-scrollbar-thumb {
+  background-color: #E1E1E1;
+  border-radius: 0.5vw;
+}
+
+.directoryItemsHeader {
+  display: flex;
+  align-items: center;
+  padding: 1.5% 2% 0.5% 2%;
+}
+
+.directoryItemsHeaderText {
+  width: 20%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
+/*# sourceMappingURL=style.module.css.map */

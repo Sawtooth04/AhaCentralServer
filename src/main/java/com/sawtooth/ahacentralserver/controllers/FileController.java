@@ -1,5 +1,6 @@
 package com.sawtooth.ahacentralserver.controllers;
 
+import com.sawtooth.ahacentralserver.models.file.DirectoryItems;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
 import com.sawtooth.ahacentralserver.services.filedeleter.IFileDeleter;
@@ -57,7 +58,7 @@ public class FileController {
             .replaceAll("(.*/)", "");
     }
 
-    @PutMapping("/put")
+    @PutMapping("/file/put")
     @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(FileUploadModel model, Principal principal) {
@@ -77,13 +78,13 @@ public class FileController {
         }
     }
 
-    @GetMapping("/get")
+    @GetMapping("/file/get")
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> Get() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
     }
 
-    @GetMapping("/get/**")
+    @GetMapping("/file/get/**")
     @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<Resource>> Get(HttpServletRequest request) {
@@ -103,7 +104,7 @@ public class FileController {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
     }
 
-    @PatchMapping("/patch")
+    @PatchMapping("/file/patch")
     @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(FileUploadModel model) {
@@ -124,13 +125,13 @@ public class FileController {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/file/delete")
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> Delete() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
     }
 
-    @DeleteMapping("/delete/**")
+    @DeleteMapping("/file/delete/**")
     @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest request) {
@@ -151,5 +152,30 @@ public class FileController {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
         }
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+    }
+
+    @GetMapping("/files/get")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<?>> GetFiles() {
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
+    }
+
+    @GetMapping("/files/get/**")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<DirectoryItems>> GetFiles(HttpServletRequest request) {
+        String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
+            .replace("/api/file/files/get/", "").replace("root", "/");
+        DirectoryItems result = new DirectoryItems();
+        IFileRepository fileRepository;
+
+        try {
+            fileRepository = storage.GetRepository(IFileRepository.class);
+            result.items = fileRepository.GetDirectories(path);
+            result.items.addAll(fileRepository.GetFiles(path));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(result));
+        }
     }
 }

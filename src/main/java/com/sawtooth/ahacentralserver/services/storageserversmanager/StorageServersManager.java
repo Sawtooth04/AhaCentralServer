@@ -65,6 +65,8 @@ public class StorageServersManager implements IStorageServersManager {
                 total.Add(new Space(tempStorageServerSpace.totalSpace, 0).Normalize());
             }
         }
+        if (free.degree == 0 && free.basis == 0)
+            return new StorageServersSpace(free, 1);
         return new StorageServersSpace(free, total.Copy().Subtract(free).Divide(total).ToFloat());
     }
 

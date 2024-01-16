@@ -1,5 +1,5 @@
 class DataLabelsEnum {
-    _labels = ["PB", "TB", "GB", "MB", "Bytes"];
+    _labels = ["PB", "TB", "GB", "MB", "KB", "B"];
 
     get(index) {
         return this._labels[index];
@@ -25,4 +25,16 @@ function formatSpace(space) {
     return `0 ${labelsEnum.get(labelsEnum.count() - 1)}`;
 }
 
-export default formatSpace;
+function formatBytes(bytes) {
+    let labelsEnum = new DataLabelsEnum();
+    let result = bytes;
+
+    for (let i = labelsEnum.count() - 1; i >= 0; i--)
+        if (Math.log10(result) + 1 > 4)
+            result /= 1024;
+        else
+            return `${Math.round(result)} ${labelsEnum.get(i)}`;
+    return `${Math.round(result)} ${labelsEnum.get(0)}`;
+}
+
+export {formatSpace as default, formatBytes};

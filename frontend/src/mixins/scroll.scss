@@ -1,0 +1,13 @@
+@import "../colors";
+
+@mixin scroll($size) {
+  &::-webkit-scrollbar{
+    width: $size;
+    height: $size;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $border_color;
+    border-radius: 0.5vw;
+  }
+}

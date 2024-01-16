@@ -9,6 +9,15 @@ const Main = () => {
     const [general, setGeneral] = useState({});
     const [storageServers, setStorageServers] = useState([]);
 
+    useEffect(() => {
+        async function getCentralServerData() {
+            await getGeneral();
+            await getStorageServers();
+        }
+
+        void getCentralServerData();
+    }, []);
+
     async function getGeneral() {
         let response = await (await csrfFetch(await CentralServerLinksProvider.getLink('central-server-general'))).json();
         setGeneral(response);
@@ -19,29 +28,25 @@ const Main = () => {
         setStorageServers(response.servers);
     }
 
-    useEffect(() => {
-        async function getCentralServerData() {
-            await getGeneral();
-            await getStorageServers();
-        }
-
-        void getCentralServerData();
-    }, []);
+    async function onRefresh() {
+        await getGeneral();
+        await getStorageServers();
+    }
 
     return (
         <div className={styles.main}>
             <h1 className={styles.mainHeading}>
                 Общее
-                <RefreshButton onClick={() => {console.log("click")}}/>
+                <RefreshButton onClick={onRefresh}/>
             </h1>
             <p className={styles.mainText}> Всего серверов хранения: {general.storageServersCount} </p>
             <p className={styles.mainText}> Всего бэкап-серверов: {general.backupServersCount} </p>
             <p className={styles.mainText}> Всего пользователей: {general.customersCount} </p>
             <p className={styles.mainText}> Всего чанков: {general.chunksCount} </p>
-            <p className={styles.mainText}> Объём доступных данных: {formatSpace(general.free)} </p>
+            <p className={styles.mainText}> Свободный объём: {formatSpace(general.free)} </p>
             <p className={styles.mainText}> Занято: {general.occupied ? general.occupied * 100 : 0}% </p>
             <h1 className={styles.mainHeading}> Доступные серверы хранения </h1>
-            {storageServers.map(server => {
+            {storageServers.length === 0 ? <p className={styles.mainText}> Отсутствуют </p> : storageServers.map(server => {
                 return <p className={styles.mainText} key={server.storageServerID}> {server.name}: {server.address} </p>
             })}
         </div>

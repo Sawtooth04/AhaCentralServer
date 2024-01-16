@@ -1,0 +1,29 @@
+.filePartPath {
+  position: relative;
+  margin: 0 0 0 0.5%;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.filePartPath:first-child {
+  margin: 0;
+}
+
+.filePartPath:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 2%;
+  width: 96%;
+  height: 8%;
+  opacity: 0;
+  background-color: #E1E1E1;
+  transition: opacity 200ms ease-out;
+}
+
+.filePartPath:hover:after {
+  opacity: 1;
+}
+
+/*# sourceMappingURL=style.module.css.map */

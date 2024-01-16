@@ -11,7 +11,7 @@
 }
 
 .refreshButtonRotatingImage {
-  compose: refreshButtonImage;
+  composes: refreshButtonImage;
   animation: rotating 1000ms ease-out infinite;
 }
 

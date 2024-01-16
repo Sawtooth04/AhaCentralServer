@@ -4,6 +4,14 @@
   flex-grow: 1;
   overflow-y: auto;
 }
+.main::-webkit-scrollbar {
+  width: 1vw;
+  height: 1vw;
+}
+.main::-webkit-scrollbar-thumb {
+  background-color: #E1E1E1;
+  border-radius: 0.5vw;
+}
 
 .mainHeading {
   display: flex;
@@ -18,15 +26,6 @@
   margin: 0 0 0.64% 2%;
   font-family: "TTNormsPro", "sans-serif";
   font-size: 18px;
-}
-
-.main::-webkit-scrollbar {
-  width: 1vw;
-}
-
-.main::-webkit-scrollbar-thumb {
-  background-color: #E1E1E1;
-  border-radius: 0.5vw;
 }
 
 /*# sourceMappingURL=style.module.css.map */
