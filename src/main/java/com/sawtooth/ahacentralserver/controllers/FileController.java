@@ -164,7 +164,7 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<DirectoryItems>> GetFiles(HttpServletRequest request) {
         String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace("/api/file/files/get/", "").replace("root", "/");
+            .replace("/api/file/files/get/", "").replace("root", "/").replace("//", "/");
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
 

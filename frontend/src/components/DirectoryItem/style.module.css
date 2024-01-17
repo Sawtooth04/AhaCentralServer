@@ -1,9 +1,27 @@
 .directoryItem {
   display: flex;
+  position: relative;
   width: 96%;
   height: 2.5%;
-  margin-bottom: 1%;
+  margin-bottom: 0.5%;
   padding: 0 2%;
+  cursor: pointer;
+}
+
+.directoryItem:after {
+  content: "";
+  position: absolute;
+  bottom: -15%;
+  left: 2%;
+  width: 96%;
+  height: 9%;
+  opacity: 0;
+  background-color: #cdcdcd;
+  transition: opacity 200ms ease-out;
+}
+
+.directoryItem:hover:after {
+  opacity: 1;
 }
 
 .directoryItemText {

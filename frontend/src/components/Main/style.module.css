@@ -9,7 +9,7 @@
   height: 1vw;
 }
 .main::-webkit-scrollbar-thumb {
-  background-color: #E1E1E1;
+  background-color: #cdcdcd;
   border-radius: 0.5vw;
 }
 

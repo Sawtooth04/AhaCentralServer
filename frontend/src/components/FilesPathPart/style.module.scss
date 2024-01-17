@@ -15,10 +15,10 @@
 .filePartPath:after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -10%;
   left: 2%;
   width: 96%;
-  height: 8%;
+  height: 11%;
   opacity: 0;
   background-color: $border_color;
   transition: opacity 200ms ease-out;

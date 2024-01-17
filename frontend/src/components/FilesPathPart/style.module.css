@@ -13,12 +13,12 @@
 .filePartPath:after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -10%;
   left: 2%;
   width: 96%;
-  height: 8%;
+  height: 11%;
   opacity: 0;
-  background-color: #E1E1E1;
+  background-color: #cdcdcd;
   transition: opacity 200ms ease-out;
 }
 
