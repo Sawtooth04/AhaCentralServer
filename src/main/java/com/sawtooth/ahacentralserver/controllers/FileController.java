@@ -50,7 +50,7 @@ public class FileController {
     private String GetFilePath(HttpServletRequest request, String mapping) {
         String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
             .replace(mapping, "").replaceAll("(/[^/]*)$", "");
-        return path.isEmpty() ? "/" : path;
+        return path.replace("root", "").replace("//", "/").replaceAll("%20", " ");
     }
 
     private String GetFileName(HttpServletRequest request) {
@@ -136,11 +136,11 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest request) {
         RepresentationModel<?> result = new RepresentationModel<>();
-        String path = GetFilePath(request, "/api/file/delete"), name = GetFileName(request);
+        String path = GetFilePath(request, "/api/file/file/delete"), name = GetFileName(request);
         File file;
 
         try {
-            file = storage.GetRepository(IFileRepository.class).Get(path.isEmpty() ? "/" : path, name);
+            file = storage.GetRepository(IFileRepository.class).Get(path, name);
             storage.GetRepository(IFileRepository.class).Delete(file);
             if (fileDeleter.Delete(file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
@@ -164,7 +164,8 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<DirectoryItems>> GetFiles(HttpServletRequest request) {
         String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace("/api/file/files/get/", "").replace("root", "/").replace("//", "/");
+            .replace("/api/file/files/get/", "").replace("root", "/")
+            .replace("//", "/").replace("%20", " ");
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
 

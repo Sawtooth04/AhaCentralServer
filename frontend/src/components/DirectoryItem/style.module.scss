@@ -10,6 +10,11 @@
   cursor: pointer;
 }
 
+.selectedDirectoryItem {
+  composes: directoryItem;
+  background-color: $select_color;
+}
+
 .directoryItem:after {
   content: "";
   position: absolute;

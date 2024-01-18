@@ -27,7 +27,7 @@ public class SecurityConfiguration {
                 .anyRequest().permitAll()
             ).csrf(csrf -> csrf
                 //.ignoringRequestMatchers("/**")
-                .ignoringRequestMatchers("/api/login/login", "/api/registration/register")
+                .ignoringRequestMatchers("/api/login/login", "/api/registration/register", "/api/")
                 .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             );

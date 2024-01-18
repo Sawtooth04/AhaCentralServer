@@ -8,6 +8,11 @@
   cursor: pointer;
 }
 
+.selectedDirectoryItem {
+  composes: directoryItem;
+  background-color: rgba(70, 77, 92, 0.2);
+}
+
 .directoryItem:after {
   content: "";
   position: absolute;
@@ -16,7 +21,7 @@
   width: 96%;
   height: 9%;
   opacity: 0;
-  background-color: #cdcdcd;
+  background-color: #CDCDCD;
   transition: opacity 200ms ease-out;
 }
 

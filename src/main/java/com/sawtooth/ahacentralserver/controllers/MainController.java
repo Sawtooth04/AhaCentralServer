@@ -25,6 +25,7 @@ public class MainController {
         MainResponse result = new MainResponse();
 
         result.add(linkTo(methodOn(MainController.class).Main()).withSelfRel());
+        result.add(linkTo(methodOn(LoginController.class).Login(null, null)).withRel("login"));
         result.add(linkTo(methodOn(ChunkController.class).Synchronize(null, null)).withRel("chunk-sync"));
         result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("file-put"));
         result.add(linkTo(methodOn(FileController.class).Get()).withRel("file-get"));

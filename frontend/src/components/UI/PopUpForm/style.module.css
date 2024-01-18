@@ -1,0 +1,42 @@
+.popUpForm {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 1;
+  background-color: rgba(70, 77, 92, 0.7);
+}
+
+.hiddenPopUpForm {
+  composes: popUpForm;
+  display: none;
+}
+
+.popUpFormContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 18%;
+  padding: 0 2%;
+  border: #CDCDCD 0.15vw solid;
+  border-radius: 1vw;
+  background-color: #F0F0F0;
+  z-index: 2;
+}
+.popUpFormContent > * {
+  margin-top: 7%;
+}
+.popUpFormContent > *:last-child {
+  margin-bottom: 7%;
+}
+
+.popUpFormContentHeader {
+  margin: 7% 0 0 0;
+  font-family: "TTNormsPro SemiBold", "sans-serif";
+  font-weight: normal;
+  font-size: 24px;
+}
+
+/*# sourceMappingURL=style.module.css.map */

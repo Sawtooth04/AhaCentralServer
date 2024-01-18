@@ -1,0 +1,43 @@
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #F0F0F0;
+}
+
+.loginLogo {
+  width: 15%;
+  height: auto;
+  margin-top: 5.5%;
+}
+
+.loginSignWrapper {
+  display: flex;
+  margin-top: 1.5%;
+}
+
+.loginSign {
+  margin: 0 0.15em;
+  color: #464D5C;
+  font-family: "TTNormsPro", "sans-serif";
+  font-weight: bold;
+  font-size: 36px;
+}
+
+.loginSign:first-child, .loginSign:last-child {
+  color: #95C71F;
+}
+
+.loginTextInputsWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20.8%;
+}
+.loginTextInputsWrapper > * {
+  margin-top: 7%;
+}
+
+/*# sourceMappingURL=style.module.css.map */
