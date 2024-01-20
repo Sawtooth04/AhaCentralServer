@@ -6,5 +6,5 @@ import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
 public interface IFileUploader {
-    public boolean Upload(FileUploadModel model, int fileID) throws IOException, InstantiationException, NoSuchAlgorithmException;
+    public boolean Upload(FileUploadModel model, int customerID) throws IOException, InstantiationException, NoSuchAlgorithmException;
 }

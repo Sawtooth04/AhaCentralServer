@@ -48,13 +48,13 @@ public class AppConfiguration {
                     registry.addMapping("/**")
                         .allowedOrigins(GetAllowedOrigins())
                         .allowCredentials(true)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH");
                 }
                 catch (Exception exception) {
                     registry.addMapping("/**")
                         .allowedOrigins(corsAllowedOrigins)
                         .allowCredentials(true)
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH");
                 }
             }
         };

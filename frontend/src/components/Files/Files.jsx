@@ -3,25 +3,30 @@ import styles from './style.module.css'
 import FilesPathPart from "../FilesPathPart/FilesPathPart";
 import csrfFetch from "../../utils/CsrfFetch";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
-import DirectoryItem from "../DirectoryItem/DirectoryItem";
-import FilesButton from "../UI/FilesButton/FilesButton";
-import PopUpForm from "../UI/PopUpForm/PopUpForm";
-import TextInput from "../UI/TextInput/TextInput";
-import Button from "../UI/Button/Button";
+import CreateDirectoryForm from "../CreateDirectoryForm/CreateDirectoryForm";
+import FilesList from "../FilesList/FilesList";
+import FilesHeading from "../FilesHeading/FilesHeading";
+import DeleteFileForm from "../DeleteFileForm/DeleteFileForm";
+import RenameFileForm from "../RenameFileForm/RenameFileForm";
+import ReplaceFileForm from "../ReplaceFileForm/ReplaceFileForm";
 
 const Files = () => {
     const [pathParts, setPathParts] = useState(['root']);
     const [directoryItems, setDirectoryItems] = useState([]);
+    const [selectedFilesBuffer, setSelectedFilesBuffer] = useState([]);
     const [isCreateDirectoryFormHidden, setIsCreateDirectoryFormHidden] = useState(true);
     const [isDeleteFormHidden, setIsDeleteFormHidden] = useState(true);
-    const [selectedFilesBuffer, setSelectedFilesBuffer] = useState([]);
+    const [isRenameFileFormHidden, setIsRenameFileFormHidden] = useState(true);
+    const [isReplaceFileFormHidden, setIsReplaceFileFormHidden] = useState(true);
+
+    const fileInputRef = useRef(null);
+
     const buildPathCallback = useCallback(buildPath, [pathParts]);
     const getDirectoryItemsCallback = useCallback(getDirectoryItems, [buildPathCallback]);
-    const fileInputRef = useRef(null);
-    const directoryNameRef = useRef(null);
 
     useEffect(() => {
         void getDirectoryItemsCallback();
+        setSelectedFilesBuffer([]);
     }, [getDirectoryItemsCallback]);
 
     function buildPath() {
@@ -29,23 +34,8 @@ const Files = () => {
     }
 
     async function getDirectoryItems() {
-        let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('files-get')}/${buildPathCallback()}`);
+        let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-all-get')}/${buildPathCallback()}`);
         setDirectoryItems((await response.json()).items);
-    }
-
-    function onDirectoryClick(directory) {
-        setPathParts([...pathParts, directory.name]);
-    }
-
-    function onFileClick(file) {
-        let index = selectedFilesBuffer.findIndex(f => f === file.name);
-        if (index === -1)
-            setSelectedFilesBuffer([...selectedFilesBuffer, file.name]);
-        else {
-            selectedFilesBuffer.splice(index, 1);
-            setSelectedFilesBuffer([...selectedFilesBuffer]);
-        }
-
     }
 
     function onPathPartClick(index) {
@@ -64,59 +54,54 @@ const Files = () => {
             method: 'put',
             body: formData
         });
+        await refresh();
     }
 
     function onAddDirectoryClick() {
         setIsCreateDirectoryFormHidden(false);
     }
 
-    function addDirectory() {
-        let name = directoryNameRef.current.value;
-
-        if (name !== '') {
-            setPathParts([...pathParts, name]);
-            setIsCreateDirectoryFormHidden(true);
-        }
+    function deleteSelectedFiles() {
+        setIsDeleteFormHidden(false);
     }
 
-    function deleteSelectedFiles() {
-        selectedFilesBuffer.forEach(async (file) => {
-            await csrfFetch(`${await CentralServerLinksProvider.getLink('file-delete')}/${buildPathCallback()}/${file}`, {
-                method: 'delete'
-            });
-        })
+    function renameSelectedFile() {
+        setIsRenameFileFormHidden(false);
+    }
+
+    function replaceSelectedFiles() {
+        setIsReplaceFileFormHidden(false);
+    }
+
+    function toPrevDirectory() {
+        pathParts.splice(-1, 1);
+        setPathParts([...pathParts]);
+    }
+
+    async function refresh() {
+        await getDirectoryItemsCallback();
+        setSelectedFilesBuffer([]);
     }
 
     return (
         <div className={styles.files}>
-            <PopUpForm header={'Создание папки'} isHidden={isCreateDirectoryFormHidden}>
-                <TextInput type={'text'} placeholder={'Название'} inputRef={directoryNameRef}/>
-                <Button text={'Создать'} onClick={addDirectory}/>
-                <Button text={'Отменить'} onClick={() => setIsCreateDirectoryFormHidden(true)}/>
-            </PopUpForm>
+            <DeleteFileForm isHidden={isDeleteFormHidden} setIsHidden={setIsDeleteFormHidden} selectedFilesBuffer={selectedFilesBuffer}
+                buildPath={buildPathCallback} toPrevDirectory={toPrevDirectory} onDelete={refresh}/>
+            <CreateDirectoryForm setPathParts={setPathParts} pathParts={pathParts} isHidden={isCreateDirectoryFormHidden}
+                setIsHidden={setIsCreateDirectoryFormHidden}/>
+            <RenameFileForm isHidden={isRenameFileFormHidden} buildPath={buildPathCallback} file={selectedFilesBuffer[0]}
+                setIsHidden = {setIsRenameFileFormHidden} onRename={refresh}/>
+            <ReplaceFileForm isHidden={isReplaceFileFormHidden} setIsHidden={setIsReplaceFileFormHidden} files={selectedFilesBuffer}
+                onReplace={refresh} currentPath={buildPathCallback()}/>
             <input type={"file"} hidden={true} ref={fileInputRef} onChange={putFile}/>
-            <h1 className={styles.filesHeading}>
-                Файлы
-                <FilesButton src={'assets/icons/add-file.png'} hint={"Загрузить файл"} onClick={onPutFileClick} isActive={true}/>
-                <FilesButton src={'assets/icons/add-folder.png'} hint={"Добавить папку"} onClick={onAddDirectoryClick} isActive={true}/>
-                <FilesButton src={'assets/icons/delete.png'} hint={"Удалить"} onClick={deleteSelectedFiles} isActive={selectedFilesBuffer.length > 0}/>
-                <FilesButton src={'assets/icons/change.png'} hint={"Переименовать"} onClick={null} isActive={false}/>
-            </h1>
+            <FilesHeading putFile={onPutFileClick} addDirectory={onAddDirectoryClick} deleteFiles={deleteSelectedFiles} items={directoryItems}
+                renameFile={renameSelectedFile} replaceFiles={replaceSelectedFiles} selectedFilesBuffer={selectedFilesBuffer}/>
             <div className={styles.filesPathPartsWrapper}>
                 {pathParts.map((part, index) =>
                     <FilesPathPart key={`${index}${part}`} label={part} index={index} onClick={onPathPartClick}/>)}
             </div>
-            <div className={styles.directoryItemsHeader}>
-                <p className={styles.directoryItemsHeaderText}> Название </p>
-                <p className={styles.directoryItemsHeaderText}> Размер </p>
-                <p className={styles.directoryItemsHeaderText}> Формат </p>
-                <p className={styles.directoryItemsHeaderText}> Загружен </p>
-                <p className={styles.directoryItemsHeaderText}> Обновлен </p>
-            </div>
-            {directoryItems.map((item, index) => {
-                return <DirectoryItem key={`${index}${item.name}`} item={item} onClick={item.isFile ? onFileClick : onDirectoryClick}
-                    isSelected={selectedFilesBuffer.includes(item.name)}/>
-            })}
+            <FilesList items={directoryItems} pathParts={pathParts} setPathParts={setPathParts} filesBuffer={selectedFilesBuffer}
+                setFilesBuffer={setSelectedFilesBuffer}/>
         </div>
     );
 };

@@ -16,4 +16,10 @@ public interface IFileRepository extends IRepository {
     public List<DirectoryItem> GetFiles(String path);
 
     public List<DirectoryItem> GetDirectories(String path);
+
+    public boolean IsFileExists(String name, String path);
+
+    public void Update(File file);
+
+    public void SetUpdateTimestamp(File file);
 }

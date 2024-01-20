@@ -40,4 +40,22 @@ public class FileRepository implements IFileRepository {
     public List<DirectoryItem> GetDirectories(String path) {
         return template.query("SELECT * FROM get_directories(?)", new DirectoryFolderMapper(), path);
     }
+
+    @Override
+    public boolean IsFileExists(String name, String path) {
+        return Boolean.TRUE.equals(template.queryForObject("SELECT * FROM is_file_exists(?, ?)", new SingleColumnRowMapper<>(),
+            name, path));
+    }
+
+    @Override
+    public void Update(File file) {
+        template.queryForObject("SELECT * FROM update_file(?, ?, ?)", new SingleColumnRowMapper<>(), file.fileID(),
+            file.name(), file.path());
+    }
+
+    @Override
+    public void SetUpdateTimestamp(File file) {
+        template.queryForObject("SELECT * FROM set_file_updated_timestamp(?)", new SingleColumnRowMapper<>(),
+            file.fileID());
+    }
 }

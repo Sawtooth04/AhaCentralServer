@@ -61,6 +61,12 @@
             <artifactId>spring-security-config</artifactId>
             <version>6.1.2</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.java-json-tools</groupId>
+            <artifactId>json-patch</artifactId>
+            <version>1.13</version>
+        </dependency>
     </dependencies>
 
     <build>

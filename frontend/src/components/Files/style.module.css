@@ -4,21 +4,12 @@
   position: relative;
   flex-grow: 1;
   height: 100%;
-  overflow-y: auto;
-}
-
-.filesHeading {
-  display: flex;
-  align-items: flex-end;
-  margin: 2% 0 2% 2%;
-  font-family: "TTNormsPro SemiBold", "sans-serif";
-  font-weight: normal;
-  font-size: 24px;
 }
 
 .filesPathPartsWrapper {
   display: flex;
   align-items: center;
+  margin-top: 2.7vh;
   padding: 0 2% 0.5% 2%;
   overflow-x: auto;
   cursor: pointer;
@@ -30,19 +21,6 @@
 .filesPathPartsWrapper::-webkit-scrollbar-thumb {
   background-color: #CDCDCD;
   border-radius: 0.5vw;
-}
-
-.directoryItemsHeader {
-  display: flex;
-  align-items: center;
-  padding: 1.5% 2% 0.5% 2%;
-}
-
-.directoryItemsHeaderText {
-  width: 20%;
-  margin: 0;
-  font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
 }
 
 /*# sourceMappingURL=style.module.css.map */

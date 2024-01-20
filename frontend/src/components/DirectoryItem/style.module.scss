@@ -4,10 +4,14 @@
   display: flex;
   position: relative;
   width: 96%;
-  height: 2.5%;
-  margin-bottom: 0.5%;
+  height: 2.5vh;
+  margin-bottom: 0.92vh;
   padding: 0 2%;
   cursor: pointer;
+}
+
+.directoryItem:first-child {
+  margin-top: 0.92vh;
 }
 
 .selectedDirectoryItem {
@@ -18,7 +22,7 @@
 .directoryItem:after {
   content: "";
   position: absolute;
-  bottom: -15%;
+  bottom: -10%;
   left: 2%;
   width: 96%;
   height: 9%;

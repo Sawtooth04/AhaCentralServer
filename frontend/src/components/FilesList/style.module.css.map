@@ -1,0 +1,1 @@
+{"version":3,"sourceRoot":"","sources":["style.module.scss","../../colors.scss","../../mixins/scroll.scss"],"names":[],"mappings":"AAGA;EACE;EACA;;;AAGF;EACE;EACA;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;EACA;EACA;EACA,kBCpBa;;;ADuBf;EACE;EACA;EACA;EACA;;;AAGF;EAEE;EACA;EACA;EACA;;AElCA;EACE,OF6Bc;EE5Bd,QF4Bc;;AEzBhB;EACE,kBDPW;ECQX","file":"style.module.css"}

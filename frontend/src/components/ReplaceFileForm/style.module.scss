@@ -1,0 +1,70 @@
+@import "../../colors";
+@import "../../mixins/scroll";
+
+.replaceFileForm {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  & > * {
+    & > * {
+      margin-top: 8%;
+    }
+  }
+}
+
+.pathPartsWrapper {
+  @include scroll(0.5vw);
+  display: flex;
+  align-items: center;
+  width: 30vw;
+  height: 4vh;
+  margin: 1vh 0 0 0;
+  overflow-x: auto;
+  cursor: pointer;
+}
+
+.directoryItemsHeaderText {
+  position: relative;
+  width: 100%;
+  margin: 1vh 0 0 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
+.directoryItemsHeaderText:after {
+  content: "";
+  position: absolute;
+  bottom: -8%;
+  left: 0;
+  width: 100%;
+  height: 6%;
+  background-color: $border_color;
+}
+
+.directoriesList {
+  @include scroll(0.5vw);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  height: 25vh;
+  margin-top: 1vh;
+  overflow-y: auto;
+
+  & > * {
+    width: 100%;
+    margin-top: 1.1vh;
+    padding: 0;
+    height: auto;
+  }
+
+  & > *:after {
+    left: 0;
+    width: 100%;
+  }
+
+  & > *:first-child {
+    margin-top: 0.4vh;
+  }
+}

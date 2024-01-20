@@ -10,7 +10,7 @@ const Login = () => {
     const passwordRef = useRef(null);
 
     async function login() {
-        let response = await CsrfFetch(await CentralServerLinksProvider.getLink('login'), {
+        await CsrfFetch(await CentralServerLinksProvider.getLink('login'), {
             method: 'post',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({

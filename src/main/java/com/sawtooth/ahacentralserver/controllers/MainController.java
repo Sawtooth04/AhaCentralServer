@@ -29,11 +29,11 @@ public class MainController {
         result.add(linkTo(methodOn(ChunkController.class).Synchronize(null, null)).withRel("chunk-sync"));
         result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("file-put"));
         result.add(linkTo(methodOn(FileController.class).Get()).withRel("file-get"));
-        result.add(linkTo(methodOn(FileController.class).Patch(null)).withRel("file-patch"));
+        result.add(linkTo(methodOn(FileController.class).Patch()).withRel("file-patch"));
         result.add(linkTo(methodOn(FileController.class).Delete()).withRel("file-delete"));
-        result.add(linkTo(methodOn(FileController.class).GetFiles()).withRel("files-get"));
+        result.add(linkTo(methodOn(FileController.class).GetAll()).withRel("file-all-get"));
+        result.add(linkTo(methodOn(FileController.class).GetDirectories()).withRel("file-directories-get"));
         result.add(linkTo(methodOn(RegistrationController.class).Register(null)).withRel("registration"));
-        result.add(linkTo(methodOn(LoginController.class).Login(null, null)).withRel("login"));
         result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("storage-server-put"));
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("storage-servers-conditions"));
         result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("central-server-general"));

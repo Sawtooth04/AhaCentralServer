@@ -1,5 +1,9 @@
 package com.sawtooth.ahacentralserver.controllers;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonpatch.JsonPatch;
+import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.sawtooth.ahacentralserver.models.file.DirectoryItems;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
@@ -26,6 +30,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.FileInputStream;
 import java.security.Principal;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -50,7 +55,7 @@ public class FileController {
     private String GetFilePath(HttpServletRequest request, String mapping) {
         String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
             .replace(mapping, "").replaceAll("(/[^/]*)$", "");
-        return path.replace("root", "").replace("//", "/").replaceAll("%20", " ");
+        return path.replaceAll("%20", " ");
     }
 
     private String GetFileName(HttpServletRequest request) {
@@ -63,14 +68,16 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(FileUploadModel model, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
-        int fileID;
+        File file;
 
         try {
-            fileID = storage.GetRepository(IFileRepository.class).Put(new File(-1, storage.GetRepository(ICustomerRepository.class)
-                .Get(principal.getName()).customerID(),
-                model.file().getOriginalFilename(), model.path(), null, null));
-            if (fileUploader.Upload(model, fileID))
-                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            if (storage.GetRepository(IFileRepository.class).IsFileExists(model.file().getOriginalFilename(), model.path())) {
+                file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
+                if (fileUpdater.Update(model, file))
+                    return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            }
+            else if (fileUploader.Upload(model, storage.GetRepository(ICustomerRepository.class).Get(principal.getName()).customerID()))
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.CREATED).body(result));
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
         }
         catch (Exception exception) {
@@ -89,7 +96,7 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<Resource>> Get(HttpServletRequest request) {
         java.io.File tempFile;
-        String path = GetFilePath(request, "/api/file/get"), name = GetFileName(request);
+        String path = GetFilePath(request, "/api/file/file/get"), name = GetFileName(request);
 
         try {
             if ((tempFile = fileResourceComposer.Compose(storage.GetRepository(IFileRepository.class).Get(path, name))) != null) {
@@ -104,17 +111,26 @@ public class FileController {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null));
     }
 
-    @PatchMapping("/file/patch")
+    @GetMapping("/file/patch")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<?>> Patch() {
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
+    }
+
+    @PatchMapping("/file/patch/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(FileUploadModel model) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(@RequestBody JsonPatch patch, HttpServletRequest request) {
         RepresentationModel<?> result = new RepresentationModel<>();
+        String path = GetFilePath(request, "/api/file/file/patch"), name = GetFileName(request);
+        ObjectMapper objectMapper = new ObjectMapper();
         File file;
 
         try {
-            file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
-            if (fileUpdater.Update(model, file))
-                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            file = storage.GetRepository(IFileRepository.class).Get(path, name);
+            storage.GetRepository(IFileRepository.class).Update(objectMapper.treeToValue(patch.apply(
+                objectMapper.convertValue(file, JsonNode.class)), File.class));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NO_CONTENT).body(result));
         }
         catch (EmptyResultDataAccessException exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(result));
@@ -122,7 +138,6 @@ public class FileController {
         catch (Exception exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
         }
-        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
     }
 
     @GetMapping("/file/delete")
@@ -154,17 +169,17 @@ public class FileController {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
     }
 
-    @GetMapping("/files/get")
+    @GetMapping("/all/get")
     @ResponseBody
-    public CompletableFuture<ResponseEntity<?>> GetFiles() {
+    public CompletableFuture<ResponseEntity<?>> GetAll() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
     }
 
-    @GetMapping("/files/get/**")
+    @GetMapping("/all/get/**")
     @ResponseBody
-    public CompletableFuture<ResponseEntity<DirectoryItems>> GetFiles(HttpServletRequest request) {
+    public CompletableFuture<ResponseEntity<DirectoryItems>> GetAll(HttpServletRequest request) {
         String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace("/api/file/files/get/", "").replace("root", "/")
+            .replace("/api/file/all/get/", "").replace("root", "/")
             .replace("//", "/").replace("%20", " ");
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
@@ -173,6 +188,31 @@ public class FileController {
             fileRepository = storage.GetRepository(IFileRepository.class);
             result.items = fileRepository.GetDirectories(path);
             result.items.addAll(fileRepository.GetFiles(path));
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(result));
+        }
+    }
+
+    @GetMapping("/directories/get")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<?>> GetDirectories() {
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
+    }
+
+    @GetMapping("/directories/get/**")
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<DirectoryItems>> GetDirectories(HttpServletRequest request) {
+        String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
+            .replace("/api/file/directories/get/", "").replace("root", "/")
+            .replace("//", "/").replace("%20", " ");
+        DirectoryItems result = new DirectoryItems();
+        IFileRepository fileRepository;
+
+        try {
+            fileRepository = storage.GetRepository(IFileRepository.class);
+            result.items = fileRepository.GetDirectories(path);
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
         catch (Exception exception) {
