@@ -9,6 +9,7 @@ import FilesHeading from "../FilesHeading/FilesHeading";
 import DeleteFileForm from "../DeleteFileForm/DeleteFileForm";
 import RenameFileForm from "../RenameFileForm/RenameFileForm";
 import ReplaceFileForm from "../ReplaceFileForm/ReplaceFileForm";
+import DownloadFileForm from "../DownloadFileForm/DownloadFileForm";
 
 const Files = () => {
     const [pathParts, setPathParts] = useState(['root']);
@@ -18,6 +19,7 @@ const Files = () => {
     const [isDeleteFormHidden, setIsDeleteFormHidden] = useState(true);
     const [isRenameFileFormHidden, setIsRenameFileFormHidden] = useState(true);
     const [isReplaceFileFormHidden, setIsReplaceFileFormHidden] = useState(true);
+    const [isDownloadFileFormHidden, setIsDownloadFileFormHidden] = useState(true);
 
     const fileInputRef = useRef(null);
 
@@ -73,6 +75,10 @@ const Files = () => {
         setIsReplaceFileFormHidden(false);
     }
 
+    function downloadSelectedFiles() {
+        setIsDownloadFileFormHidden(false);
+    }
+
     function toPrevDirectory() {
         pathParts.splice(-1, 1);
         setPathParts([...pathParts]);
@@ -93,9 +99,12 @@ const Files = () => {
                 setIsHidden = {setIsRenameFileFormHidden} onRename={refresh}/>
             <ReplaceFileForm isHidden={isReplaceFileFormHidden} setIsHidden={setIsReplaceFileFormHidden} files={selectedFilesBuffer}
                 onReplace={refresh} currentPath={buildPathCallback()}/>
+            <DownloadFileForm isHidden={isDownloadFileFormHidden} setIsHidden={setIsDownloadFileFormHidden} buildPath={buildPathCallback}
+                selectedFilesBuffer={selectedFilesBuffer}/>
             <input type={"file"} hidden={true} ref={fileInputRef} onChange={putFile}/>
             <FilesHeading putFile={onPutFileClick} addDirectory={onAddDirectoryClick} deleteFiles={deleteSelectedFiles} items={directoryItems}
-                renameFile={renameSelectedFile} replaceFiles={replaceSelectedFiles} selectedFilesBuffer={selectedFilesBuffer}/>
+                renameFile={renameSelectedFile} replaceFiles={replaceSelectedFiles} selectedFilesBuffer={selectedFilesBuffer}
+                downloadFiles={downloadSelectedFiles}/>
             <div className={styles.filesPathPartsWrapper}>
                 {pathParts.map((part, index) =>
                     <FilesPathPart key={`${index}${part}`} label={part} index={index} onClick={onPathPartClick}/>)}

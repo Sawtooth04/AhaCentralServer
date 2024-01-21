@@ -54,8 +54,8 @@ public class FileController {
 
     private String GetFilePath(HttpServletRequest request, String mapping) {
         String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace(mapping, "").replaceAll("(/[^/]*)$", "");
-        return path.replaceAll("%20", " ");
+            .replace(mapping, "").replaceAll("(/[^/]*)$", "").replace("/root", "");
+        return path.isEmpty() ? "/" : path.replaceAll("%20", " ");
     }
 
     private String GetFileName(HttpServletRequest request) {

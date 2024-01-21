@@ -2,20 +2,20 @@ import React, {useRef} from 'react';
 import CsrfFetch from "../../utils/CsrfFetch";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
 import PopUpForm from "../UI/PopUpForm/PopUpForm";
-import Button from "../UI/Button/Button";
 import TextInput from "../UI/TextInput/TextInput";
+import Button from "../UI/Button/Button";
 
-const RenameFileForm = ({ file, buildPath, isHidden, setIsHidden, onRename}) => {
-    const fileNameRef = useRef(null);
+const RenameGroupForm = ({ group, isHidden, setIsHidden, onRename}) => {
+    const groupNameRef = useRef(null);
 
-    async function renameFile() {
-        await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-patch")}/${buildPath()}/${file.name}`, {
+    async function renameGroup() {
+        await CsrfFetch(`${await CentralServerLinksProvider.getLink("group-patch")}/${group.groupID}`, {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify([{
                 'op': 'replace',
                 'path': '/name',
-                'value': fileNameRef.current.value
+                'value': groupNameRef.current.value
             }])
         });
         await onRename();
@@ -23,12 +23,12 @@ const RenameFileForm = ({ file, buildPath, isHidden, setIsHidden, onRename}) => 
     }
 
     return (
-        <PopUpForm header={'Переименовать файл'} isHidden={isHidden}>
-            <TextInput type={'text'} placeholder={'Имя'} inputRef={fileNameRef}/>
-            <Button text={'Применить'} onClick={renameFile}/>
+        <PopUpForm header={'Переименовать группу'} isHidden={isHidden}>
+            <TextInput type={'text'} placeholder={'Название'} inputRef={groupNameRef}/>
+            <Button text={'Применить'} onClick={renameGroup}/>
             <Button text={'Отменить'} onClick={() => setIsHidden(true)}/>
         </PopUpForm>
     );
 };
 
-export default RenameFileForm;
+export default RenameGroupForm;

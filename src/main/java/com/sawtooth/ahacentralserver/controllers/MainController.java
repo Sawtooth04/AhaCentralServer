@@ -38,6 +38,10 @@ public class MainController {
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("storage-servers-conditions"));
         result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("central-server-general"));
         result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withRel("central-server-available-servers"));
+        result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("group-get"));
+        result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withRel("group-post"));
+        result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("group-patch"));
+        result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("group-delete"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

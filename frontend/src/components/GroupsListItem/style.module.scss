@@ -1,0 +1,43 @@
+@import "../../colors";
+
+.groupListItem {
+  display: flex;
+  position: relative;
+  width: 96%;
+  height: 2.5vh;
+  margin-bottom: 0.92vh;
+  padding: 0 2%;
+  cursor: pointer;
+}
+
+.groupListItem:first-child {
+  margin-top: 0.92vh;
+}
+
+.selectedGroupListItem {
+  composes: groupListItem;
+  background-color: $select_color;
+}
+
+.groupListItem:after {
+  content: "";
+  position: absolute;
+  bottom: -10%;
+  left: 2%;
+  width: 96%;
+  height: 9%;
+  opacity: 0;
+  background-color: $border_color;
+  transition: opacity 200ms ease-out;
+}
+
+.groupListItem:hover:after {
+  opacity: 1;
+}
+
+.groupListItemText {
+  width: 20%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}

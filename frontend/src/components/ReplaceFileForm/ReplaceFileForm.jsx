@@ -41,16 +41,16 @@ const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace 
             body: JSON.stringify([{
                 'op': 'replace',
                 'path': '/path',
-                'value': path.replace('root', '/').replace('//', '/')
+                'value': path
             }])
         });
     }
 
     async function replaceFiles() {
-        let path = pathParts.join('/'), filePath = currentPath.replace('root', '/').replace('//', '/');
+        let path = pathParts.join('/');
 
         for (let file of files)
-            await replaceFile(file, path, filePath);
+            await replaceFile(file, path, currentPath);
         await onReplace();
         setIsHidden(true);
     }

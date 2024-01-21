@@ -31,7 +31,7 @@ const FilesList = ({ items, setPathParts, filesBuffer, setFilesBuffer, pathParts
             <div className={styles.files}>
                 {items.map((item, index) => {
                     return <DirectoryItem key={`${index}${item.name}`} item={item} onClick={item.isFile ? onFileClick : onDirectoryClick}
-                                          isSelected={typeof(filesBuffer.find(i => i.name === item.name)) !== 'undefined'}/>
+                        isSelected={typeof(filesBuffer.find(i => i.name === item.name)) !== 'undefined'}/>
                 })}
             </div>
         </div>

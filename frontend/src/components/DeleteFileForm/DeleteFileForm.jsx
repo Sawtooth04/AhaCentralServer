@@ -12,8 +12,7 @@ const DeleteFileForm = ({ isHidden, setIsHidden, buildPath, selectedFilesBuffer,
     }
 
     async function deleteFiles() {
-        let path = buildPath().replace('root', '/').replace('//', '/');
-        console.log(selectedFilesBuffer);
+        let path = buildPath();
         for (let file of selectedFilesBuffer)
             await deleteFile(file, path);
         setIsHidden(true);
@@ -22,8 +21,7 @@ const DeleteFileForm = ({ isHidden, setIsHidden, buildPath, selectedFilesBuffer,
     }
 
     return (
-        <PopUpForm header={`Вы действительно хотите удалить ${selectedFilesBuffer.length} ${selectedFilesBuffer.length === 1 ?
-            'файл' : 'файла'}?`} isHidden={isHidden}>
+        <PopUpForm header={`Вы действительно хотите удалить выбранные файлы?`} isHidden={isHidden}>
             <Button text={'Удалить'} onClick={deleteFiles}/>
             <Button text={'Отменить'} onClick={() => setIsHidden(true)}/>
         </PopUpForm>
