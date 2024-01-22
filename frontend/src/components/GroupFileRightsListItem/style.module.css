@@ -1,0 +1,44 @@
+.groupFileRightsListItem {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.92vh;
+  cursor: pointer;
+}
+
+.groupName {
+  width: 20%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
+.fileRightsWrapperHidden {
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+  height: 0;
+  transition: height 200ms ease-out;
+}
+
+.fileRightsWrapper {
+  composes: fileRightsWrapperHidden;
+  height: auto;
+}
+
+.fileRight {
+  width: 95%;
+  margin: 0.92vh 0 0 5%;
+  opacity: 0.5;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 18px;
+  transition: opacity 200ms ease-out;
+}
+
+.fileRightSelected {
+  composes: fileRight;
+  font-family: "TTNormsPro SemiBold", "sans-serif";
+  opacity: 1;
+}
+
+/*# sourceMappingURL=style.module.css.map */

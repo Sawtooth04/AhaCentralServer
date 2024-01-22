@@ -1,9 +1,6 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.main.MainResponse;
-import jakarta.servlet.ServletRequestWrapper;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -39,9 +36,12 @@ public class MainController {
         result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("central-server-general"));
         result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withRel("central-server-available-servers"));
         result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("group-get"));
+        result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withRel("group-own-get"));
         result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withRel("group-post"));
         result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("group-patch"));
         result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("group-delete"));
+        result.add(linkTo(methodOn(FileRightController.class).GetAll()).withRel("file-right-all-get"));
+        result.add(linkTo(methodOn(GroupFileRightController.class).Put(null)).withRel("group-file-right-map-put"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

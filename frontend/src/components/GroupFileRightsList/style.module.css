@@ -1,0 +1,18 @@
+.groupFileRightsList {
+  display: flex;
+  flex-direction: column;
+  width: 35vw;
+  max-height: 35vh;
+  min-height: 5vh;
+  overflow-y: auto;
+}
+.groupFileRightsList::-webkit-scrollbar {
+  width: 0.5vw;
+  height: 0.5vw;
+}
+.groupFileRightsList::-webkit-scrollbar-thumb {
+  background-color: #CDCDCD;
+  border-radius: 0.5vw;
+}
+
+/*# sourceMappingURL=style.module.css.map */

@@ -1,0 +1,11 @@
+@import "../../mixins/scroll";
+
+.groupFileRightsList {
+  @include scroll(0.5vw);
+  display: flex;
+  flex-direction: column;
+  width: 35vw;
+  max-height: 35vh;
+  min-height: 5vh;
+  overflow-y: auto;
+}

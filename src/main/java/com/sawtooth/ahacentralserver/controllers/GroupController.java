@@ -65,6 +65,24 @@ public class GroupController {
         }
     }
 
+    @GetMapping("/get/own")
+    @Async
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<Groups>> GetOwn(Principal principal) {
+        Groups result = new Groups();
+        Customer customer;
+
+        try {
+            result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withSelfRel());
+            customer = storage.GetRepository(ICustomerRepository.class).Get(principal.getName());
+            result.groups = storage.GetRepository(IGroupRepository.class).GetOwn(customer);
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+        }
+    }
+
     @PostMapping("/add")
     @Async
     @ResponseBody

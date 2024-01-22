@@ -3,7 +3,6 @@ package com.sawtooth.ahacentralserver.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.github.fge.jsonpatch.JsonPatchOperation;
 import com.sawtooth.ahacentralserver.models.file.DirectoryItems;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
@@ -23,14 +22,12 @@ import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.lang.Nullable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.FileInputStream;
 import java.security.Principal;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @RestController

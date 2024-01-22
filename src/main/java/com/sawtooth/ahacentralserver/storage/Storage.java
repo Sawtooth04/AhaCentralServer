@@ -9,8 +9,12 @@ import com.sawtooth.ahacentralserver.storage.repositories.customer.CustomerRepos
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.file.FileRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.file.IFileRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.fileright.FileRightRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.fileright.IFileRightRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.group.GroupRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.group.IGroupRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.groupfileright.GroupFileRightRepository;
+import com.sawtooth.ahacentralserver.storage.repositories.groupfileright.IGroupFileRightRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.StorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserverstatus.IStorageServerStatusRepository;
@@ -43,6 +47,8 @@ public class Storage implements IStorage {
         repositories.put(IChunkRepository.class.getName(), ChunkRepository.class.getName());
         repositories.put(IChunkStorageServerRepository.class.getName(), ChunkStorageServerRepository.class.getName());
         repositories.put(IGroupRepository.class.getName(), GroupRepository.class.getName());
+        repositories.put(IGroupFileRightRepository.class.getName(), GroupFileRightRepository.class.getName());
+        repositories.put(IFileRightRepository.class.getName(), FileRightRepository.class.getName());
     }
 
     public <T extends IRepository> T GetRepository(Class<T> interfaceObject) throws InstantiationException{

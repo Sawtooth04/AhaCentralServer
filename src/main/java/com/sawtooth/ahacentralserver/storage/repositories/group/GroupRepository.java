@@ -27,6 +27,11 @@ public class GroupRepository implements IGroupRepository {
     }
 
     @Override
+    public List<Group> GetOwn(Customer customer) {
+        return template.query("SELECT * FROM get_own_groups(?)", new GroupMapper(), customer.customerID());
+    }
+
+    @Override
     public void Add(Customer customer, Group group) {
         template.queryForObject("SELECT * FROM add_group(?, ?)", new SingleColumnRowMapper<>(), customer.customerID(), group.name());
     }

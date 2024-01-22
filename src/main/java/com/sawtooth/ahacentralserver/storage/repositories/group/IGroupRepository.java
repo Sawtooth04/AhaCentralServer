@@ -11,6 +11,8 @@ public interface IGroupRepository extends IRepository {
 
     public List<Group> Get(Customer customer);
 
+    public List<Group> GetOwn(Customer customer);
+
     public void Add(Customer customer, Group group);
 
     public void Update(Group group);

@@ -10,6 +10,7 @@ import DeleteFileForm from "../DeleteFileForm/DeleteFileForm";
 import RenameFileForm from "../RenameFileForm/RenameFileForm";
 import ReplaceFileForm from "../ReplaceFileForm/ReplaceFileForm";
 import DownloadFileForm from "../DownloadFileForm/DownloadFileForm";
+import PutFileForm from "../PutFileForm/PutFileForm";
 
 const Files = () => {
     const [pathParts, setPathParts] = useState(['root']);
@@ -20,6 +21,7 @@ const Files = () => {
     const [isRenameFileFormHidden, setIsRenameFileFormHidden] = useState(true);
     const [isReplaceFileFormHidden, setIsReplaceFileFormHidden] = useState(true);
     const [isDownloadFileFormHidden, setIsDownloadFileFormHidden] = useState(true);
+    const [isPutFileFormHidden, setIsPutFileFormHidden] = useState(true);
 
     const fileInputRef = useRef(null);
 
@@ -49,14 +51,15 @@ const Files = () => {
     }
 
     async function putFile() {
-        let formData = new FormData()
+        /*let formData = new FormData()
         formData.append('file', fileInputRef.current.files[0])
         formData.append('path', `/${pathParts.slice(1).join('/')}`)
         await csrfFetch(`${await CentralServerLinksProvider.getLink('file-put')}`, {
             method: 'put',
             body: formData
         });
-        await refresh();
+        await refresh();*/
+        setIsPutFileFormHidden(false);
     }
 
     function onAddDirectoryClick() {
@@ -101,6 +104,8 @@ const Files = () => {
                 onReplace={refresh} currentPath={buildPathCallback()}/>
             <DownloadFileForm isHidden={isDownloadFileFormHidden} setIsHidden={setIsDownloadFileFormHidden} buildPath={buildPathCallback}
                 selectedFilesBuffer={selectedFilesBuffer}/>
+            <PutFileForm isHidden={isPutFileFormHidden} setIsHidden={setIsPutFileFormHidden} buildPath={buildPathCallback}
+                file={fileInputRef.current?.files[0]}/>
             <input type={"file"} hidden={true} ref={fileInputRef} onChange={putFile}/>
             <FilesHeading putFile={onPutFileClick} addDirectory={onAddDirectoryClick} deleteFiles={deleteSelectedFiles} items={directoryItems}
                 renameFile={renameSelectedFile} replaceFiles={replaceSelectedFiles} selectedFilesBuffer={selectedFilesBuffer}
