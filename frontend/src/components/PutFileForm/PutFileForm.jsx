@@ -31,19 +31,35 @@ const PutFileForm = ({ isHidden, setIsHidden, file, buildPath }) => {
         setFileRights((await response.json()).fileRights);
     }
 
+    async function postGroupsFileRights(path) {
+        for (let groupID in groupsFileRights)
+            for (let fileRightID of groupsFileRights[groupID])
+                await csrfFetch(`${await CentralServerLinksProvider.getLink('group-file-right-post')}`, {
+                    method: 'put',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        'groupFileRight': {
+                            'fileID': file.fileID,
+                            'groupID': groupID,
+                            'fileRightID': fileRightID
+                        },
+                        'fileName': file.name,
+                        'path': path
+                    })
+                });
+    }
+
     async function putFile() {
-        let formData = new FormData()
+        let formData = new FormData(), path = buildPath();
         formData.append('file', file)
-        formData.append('path', `${buildPath()}`)
-        await csrfFetch(`${await CentralServerLinksProvider.getLink('file-put')}`, {
+        formData.append('path', `${path}`)
+        let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-put')}`, {
             method: 'put',
             body: formData
         });
-        await csrfFetch(`${await CentralServerLinksProvider.getLink('group-file-right-map-put')}`, {
-            method: 'put',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(groupsFileRights)
-        });
+        if (response.ok)
+            await postGroupsFileRights(path);
+        setIsHidden(true);
     }
 
     function isFileRightIncluded(groupID, fileRightID) {

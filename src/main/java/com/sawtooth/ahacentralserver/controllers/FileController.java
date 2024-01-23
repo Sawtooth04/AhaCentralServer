@@ -7,6 +7,7 @@ import com.sawtooth.ahacentralserver.models.file.DirectoryItems;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
 import com.sawtooth.ahacentralserver.services.filedeleter.IFileDeleter;
+import com.sawtooth.ahacentralserver.services.filepathprocessor.IFilePathProcessor;
 import com.sawtooth.ahacentralserver.services.fileresourcecomposer.IFileResourceComposer;
 import com.sawtooth.ahacentralserver.services.fileupdater.IFileUpdater;
 import com.sawtooth.ahacentralserver.services.fileuploader.IFileUploader;
@@ -37,22 +38,18 @@ public class FileController {
     private final IFileResourceComposer fileResourceComposer;
     private final IFileUpdater fileUpdater;
     private final IFileDeleter fileDeleter;
+    private final IFilePathProcessor filePathProcessor;
     private final IStorage storage;
 
     @Autowired
     public FileController(IFileUploader fileUploader, IStorage storage, IFileResourceComposer fileResourceComposer,
-        IFileUpdater fileUpdater, IFileDeleter fileDeleter) {
+        IFileUpdater fileUpdater, IFileDeleter fileDeleter, IFilePathProcessor filePathProcessor) {
         this.fileUploader = fileUploader;
         this.storage = storage;
         this.fileResourceComposer = fileResourceComposer;
         this.fileUpdater = fileUpdater;
         this.fileDeleter = fileDeleter;
-    }
-
-    private String GetFilePath(HttpServletRequest request, String mapping) {
-        String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace(mapping, "").replaceAll("(/[^/]*)$", "").replace("/root", "");
-        return path.isEmpty() ? "/" : path.replaceAll("%20", " ");
+        this.filePathProcessor = filePathProcessor;
     }
 
     private String GetFileName(HttpServletRequest request) {
@@ -68,6 +65,7 @@ public class FileController {
         File file;
 
         try {
+            model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
             if (storage.GetRepository(IFileRepository.class).IsFileExists(model.file().getOriginalFilename(), model.path())) {
                 file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
                 if (fileUpdater.Update(model, file))
@@ -93,7 +91,7 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<Resource>> Get(HttpServletRequest request) {
         java.io.File tempFile;
-        String path = GetFilePath(request, "/api/file/file/get"), name = GetFileName(request);
+        String path = filePathProcessor.GetFilePath(request, "/api/file/file/get"), name = GetFileName(request);
 
         try {
             if ((tempFile = fileResourceComposer.Compose(storage.GetRepository(IFileRepository.class).Get(path, name))) != null) {
@@ -119,7 +117,7 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(@RequestBody JsonPatch patch, HttpServletRequest request) {
         RepresentationModel<?> result = new RepresentationModel<>();
-        String path = GetFilePath(request, "/api/file/file/patch"), name = GetFileName(request);
+        String path = filePathProcessor.GetFilePath(request, "/api/file/file/patch"), name = GetFileName(request);
         ObjectMapper objectMapper = new ObjectMapper();
         File file;
 
@@ -148,7 +146,7 @@ public class FileController {
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest request) {
         RepresentationModel<?> result = new RepresentationModel<>();
-        String path = GetFilePath(request, "/api/file/file/delete"), name = GetFileName(request);
+        String path = filePathProcessor.GetFilePath(request, "/api/file/file/delete"), name = GetFileName(request);
         File file;
 
         try {

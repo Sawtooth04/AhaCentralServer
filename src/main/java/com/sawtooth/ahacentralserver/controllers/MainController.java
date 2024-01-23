@@ -41,7 +41,7 @@ public class MainController {
         result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("group-patch"));
         result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("group-delete"));
         result.add(linkTo(methodOn(FileRightController.class).GetAll()).withRel("file-right-all-get"));
-        result.add(linkTo(methodOn(GroupFileRightController.class).Put(null)).withRel("group-file-right-map-put"));
+        result.add(linkTo(methodOn(GroupFileRightController.class).Post(null)).withRel("group-file-right-post"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

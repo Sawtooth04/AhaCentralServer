@@ -24,6 +24,6 @@ public class GroupFileRightRepository implements IGroupFileRightRepository {
     @Override
     public void Add(GroupFileRight groupFileRight) {
         template.queryForObject("SELECT * FROM add_group_file_right(?, ?, ?)", new SingleColumnRowMapper<>(),
-            groupFileRight.fileID, groupFileRight.groupID, groupFileRight.fileRightID);
+            groupFileRight.fileID(), groupFileRight.groupID(), groupFileRight.fileRightID());
     }
 }

@@ -51,14 +51,6 @@ const Files = () => {
     }
 
     async function putFile() {
-        /*let formData = new FormData()
-        formData.append('file', fileInputRef.current.files[0])
-        formData.append('path', `/${pathParts.slice(1).join('/')}`)
-        await csrfFetch(`${await CentralServerLinksProvider.getLink('file-put')}`, {
-            method: 'put',
-            body: formData
-        });
-        await refresh();*/
         setIsPutFileFormHidden(false);
     }
 
