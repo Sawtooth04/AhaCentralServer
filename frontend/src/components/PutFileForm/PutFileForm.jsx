@@ -13,9 +13,11 @@ const PutFileForm = ({ isHidden, setIsHidden, file, buildPath }) => {
     const [groupsFileRights, setGroupsFileRights] = useState({});
 
     useEffect(() => {
-        void getGroups();
-        void getFileRights();
-    }, []);
+        if (!isHidden) {
+            void getGroups();
+            void getFileRights();
+        }
+    }, [isHidden]);
 
     async function getGroups() {
         let response = await CsrfFetch(await CentralServerLinksProvider.getLink('group-own-get'), {
@@ -34,12 +36,11 @@ const PutFileForm = ({ isHidden, setIsHidden, file, buildPath }) => {
     async function postGroupsFileRights(path) {
         for (let groupID in groupsFileRights)
             for (let fileRightID of groupsFileRights[groupID])
-                await csrfFetch(`${await CentralServerLinksProvider.getLink('group-file-right-post')}`, {
-                    method: 'put',
+                await csrfFetch(await CentralServerLinksProvider.getLink('group-file-right-post'), {
+                    method: 'post',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
                         'groupFileRight': {
-                            'fileID': file.fileID,
                             'groupID': groupID,
                             'fileRightID': fileRightID
                         },

@@ -22,8 +22,9 @@ const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace 
             setDirectoryItems((await response.json()).items);
         }
 
-        void getDirectoryItems();
-    }, [pathParts]);
+        if (!isHidden)
+            void getDirectoryItems();
+    }, [pathParts, isHidden]);
 
     function onPathPartClick(index) {
         setPathParts(pathParts.slice(0, index + 1));

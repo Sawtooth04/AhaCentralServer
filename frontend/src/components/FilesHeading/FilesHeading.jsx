@@ -2,7 +2,7 @@ import React from 'react';
 import styles from "./style.module.css";
 import FilesButton from "../UI/FilesButton/FilesButton";
 
-const FilesHeading = ({ putFile, addDirectory, deleteFiles, renameFile, replaceFiles, downloadFiles, selectedFilesBuffer, items }) => {
+const FilesHeading = ({ putFile, addDirectory, deleteFiles, renameFile, replaceFiles, downloadFiles, changePermissions, selectedFilesBuffer, items }) => {
     return (
         <h1 className={styles.filesHeading}>
             Файлы
@@ -12,6 +12,7 @@ const FilesHeading = ({ putFile, addDirectory, deleteFiles, renameFile, replaceF
             <FilesButton src={'assets/icons/change.png'} hint={"Переименовать"} onClick={renameFile} isActive={selectedFilesBuffer.length === 1}/>
             <FilesButton src={'assets/icons/replace-file.png'} hint={"Переместить"} onClick={replaceFiles} isActive={selectedFilesBuffer.length > 0}/>
             <FilesButton src={'assets/icons/download-file.png'} hint={"Скачать"} onClick={downloadFiles} isActive={selectedFilesBuffer.length > 0}/>
+            <FilesButton src={'assets/icons/permissions.png'} hint={"Права"} onClick={changePermissions} isActive={selectedFilesBuffer.length === 1}/>
         </h1>
     );
 };

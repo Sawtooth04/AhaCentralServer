@@ -11,6 +11,7 @@ import RenameFileForm from "../RenameFileForm/RenameFileForm";
 import ReplaceFileForm from "../ReplaceFileForm/ReplaceFileForm";
 import DownloadFileForm from "../DownloadFileForm/DownloadFileForm";
 import PutFileForm from "../PutFileForm/PutFileForm";
+import ChangeFilePermissionsForm from "../ChangeFilePermissionsForm/ChangeFilePermissionsForm";
 
 const Files = () => {
     const [pathParts, setPathParts] = useState(['root']);
@@ -22,6 +23,7 @@ const Files = () => {
     const [isReplaceFileFormHidden, setIsReplaceFileFormHidden] = useState(true);
     const [isDownloadFileFormHidden, setIsDownloadFileFormHidden] = useState(true);
     const [isPutFileFormHidden, setIsPutFileFormHidden] = useState(true);
+    const [isChangeFilePermissionsFormHidden, setIsChangeFilePermissionsFormHidden] = useState(true);
 
     const fileInputRef = useRef(null);
 
@@ -74,6 +76,10 @@ const Files = () => {
         setIsDownloadFileFormHidden(false);
     }
 
+    function changePermissionsOfSelectedFile() {
+        setIsChangeFilePermissionsFormHidden(false);
+    }
+
     function toPrevDirectory() {
         pathParts.splice(-1, 1);
         setPathParts([...pathParts]);
@@ -98,10 +104,12 @@ const Files = () => {
                 selectedFilesBuffer={selectedFilesBuffer}/>
             <PutFileForm isHidden={isPutFileFormHidden} setIsHidden={setIsPutFileFormHidden} buildPath={buildPathCallback}
                 file={fileInputRef.current?.files[0]}/>
+            <ChangeFilePermissionsForm isHidden={isChangeFilePermissionsFormHidden} setIsHidden={setIsChangeFilePermissionsFormHidden}
+                buildPath={buildPathCallback} file={selectedFilesBuffer[0]}/>
             <input type={"file"} hidden={true} ref={fileInputRef} onChange={putFile}/>
             <FilesHeading putFile={onPutFileClick} addDirectory={onAddDirectoryClick} deleteFiles={deleteSelectedFiles} items={directoryItems}
                 renameFile={renameSelectedFile} replaceFiles={replaceSelectedFiles} selectedFilesBuffer={selectedFilesBuffer}
-                downloadFiles={downloadSelectedFiles}/>
+                downloadFiles={downloadSelectedFiles} changePermissions={changePermissionsOfSelectedFile}/>
             <div className={styles.filesPathPartsWrapper}>
                 {pathParts.map((part, index) =>
                     <FilesPathPart key={`${index}${part}`} label={part} index={index} onClick={onPathPartClick}/>)}
