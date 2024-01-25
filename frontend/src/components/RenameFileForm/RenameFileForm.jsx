@@ -5,11 +5,11 @@ import PopUpForm from "../UI/PopUpForm/PopUpForm";
 import Button from "../UI/Button/Button";
 import TextInput from "../UI/TextInput/TextInput";
 
-const RenameFileForm = ({ file, buildPath, isHidden, setIsHidden, onRename}) => {
+const RenameFileForm = ({ file, buildPath, isHidden, setIsHidden, onRename, forbidden}) => {
     const fileNameRef = useRef(null);
 
     async function renameFile() {
-        await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-patch")}/${buildPath()}/${file.name}`, {
+        let response = await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-patch")}/${buildPath()}/${file.name}`, {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify([{
@@ -18,7 +18,10 @@ const RenameFileForm = ({ file, buildPath, isHidden, setIsHidden, onRename}) => 
                 'value': fileNameRef.current.value
             }])
         });
-        await onRename();
+        if (response.status === 403)
+            forbidden();
+        else
+            await onRename();
         setIsHidden(true);
     }
 

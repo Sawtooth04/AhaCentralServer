@@ -39,4 +39,10 @@ public class GroupFileRightRepository implements IGroupFileRightRepository {
         template.queryForObject("SELECT * FROM delete_group_file_right(?, ?, ?)", new SingleColumnRowMapper<>(),
             groupFileRight.fileID(), groupFileRight.groupID(), groupFileRight.fileRightID());
     }
+
+    @Override
+    public boolean IsFileHaveGroupRights(File file) {
+        return Boolean.TRUE.equals(template.queryForObject("SELECT * FROM is_file_have_group_rights(?)",
+            new SingleColumnRowMapper<>(), file.fileID()));
+    }
 }

@@ -8,7 +8,7 @@ import FilesPathPart from "../FilesPathPart/FilesPathPart";
 import Button from "../UI/Button/Button";
 import CsrfFetch from "../../utils/CsrfFetch";
 
-const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace }) => {
+const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace, forbidden }) => {
     const [pathParts, setPathParts] = useState(['root']);
     const [directoryItems, setDirectoryItems] = useState([]);
 
@@ -18,7 +18,7 @@ const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace 
         }
 
         async function getDirectoryItems() {
-            let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-directories-get')}/${buildPath()}`);
+            let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-directories-get')}/${buildPath()}/`);
             setDirectoryItems((await response.json()).items);
         }
 
@@ -35,8 +35,7 @@ const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace 
     }
 
     async function replaceFile(file, path, filePath) {
-        console.log(file);
-        await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-patch")}/${filePath}/${file.name}`, {
+        let response = await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-patch")}/${filePath}/${file.name}`, {
             method: 'PATCH',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify([{
@@ -45,13 +44,17 @@ const ReplaceFileForm = ({ isHidden, setIsHidden, files, currentPath, onReplace 
                 'value': path
             }])
         });
+        return response.status !== 403;
     }
 
     async function replaceFiles() {
         let path = pathParts.join('/');
 
         for (let file of files)
-            await replaceFile(file, path, currentPath);
+            if (!await replaceFile(file, path, currentPath)) {
+                forbidden();
+                break;
+            }
         await onReplace();
         setIsHidden(true);
     }

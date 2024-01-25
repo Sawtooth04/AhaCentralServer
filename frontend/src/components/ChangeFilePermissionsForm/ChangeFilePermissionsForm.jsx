@@ -7,7 +7,7 @@ import GroupFileRightsList from "../GroupFileRightsList/GroupFileRightsList";
 import Button from "../UI/Button/Button";
 import csrfFetch from "../../utils/CsrfFetch";
 
-const ChangeFilePermissionsForm = ({ isHidden, setIsHidden, file, buildPath }) => {
+const ChangeFilePermissionsForm = ({ isHidden, setIsHidden, file, buildPath, forbidden }) => {
     const [groups, setGroups] = useState([]);
     const [fileRights, setFileRights] = useState([]);
     const [postList, setPostList] = useState([]);
@@ -79,10 +79,10 @@ const ChangeFilePermissionsForm = ({ isHidden, setIsHidden, file, buildPath }) =
     }
 
     async function deleteGroupsFileRights() {
-        let path = buildPath();
+        let path = buildPath(), response;
 
-        for (let groupFileRight of deleteList)
-            await csrfFetch(await CentralServerLinksProvider.getLink('group-file-right-delete'), {
+        for (let groupFileRight of deleteList) {
+            response = await csrfFetch(await CentralServerLinksProvider.getLink('group-file-right-delete'), {
                 method: 'delete',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -94,14 +94,20 @@ const ChangeFilePermissionsForm = ({ isHidden, setIsHidden, file, buildPath }) =
                     'path': path
                 })
             });
+            if (response.status === 403) {
+                forbidden();
+                break;
+            }
+        }
+
     }
 
     async function postGroupsFileRights() {
-        let path = buildPath();
+        let path = buildPath(), response;
 
         for (let groupFileRight of postList)
-            if (!isFileRightIncluded(existingGroupFileRights, groupFileRight.groupID, groupFileRight.fileRightID))
-                await csrfFetch(await CentralServerLinksProvider.getLink('group-file-right-post'), {
+            if (!isFileRightIncluded(existingGroupFileRights, groupFileRight.groupID, groupFileRight.fileRightID)) {
+                response = await csrfFetch(await CentralServerLinksProvider.getLink('group-file-right-post'), {
                     method: 'post',
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({
@@ -113,6 +119,12 @@ const ChangeFilePermissionsForm = ({ isHidden, setIsHidden, file, buildPath }) =
                         'path': path
                     })
                 });
+                if (response.status === 403) {
+                    forbidden();
+                    break;
+                }
+            }
+
     }
 
     async function onApply() {

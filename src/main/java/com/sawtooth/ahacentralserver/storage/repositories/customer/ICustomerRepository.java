@@ -1,6 +1,7 @@
 package com.sawtooth.ahacentralserver.storage.repositories.customer;
 
 import com.sawtooth.ahacentralserver.models.customer.Customer;
+import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.storage.repositories.IRepository;
 
 public interface ICustomerRepository extends IRepository {
@@ -11,4 +12,6 @@ public interface ICustomerRepository extends IRepository {
     public Customer Get(String name);
 
     public int Count();
+
+    public boolean IsCustomerHaveFileRight(Customer customer, File file, String fileRight);
 }

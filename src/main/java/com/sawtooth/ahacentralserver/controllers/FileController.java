@@ -3,12 +3,14 @@ package com.sawtooth.ahacentralserver.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
+import com.sawtooth.ahacentralserver.models.customer.Customer;
 import com.sawtooth.ahacentralserver.models.file.DirectoryItems;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
 import com.sawtooth.ahacentralserver.services.filedeleter.IFileDeleter;
 import com.sawtooth.ahacentralserver.services.filepathprocessor.IFilePathProcessor;
 import com.sawtooth.ahacentralserver.services.fileresourcecomposer.IFileResourceComposer;
+import com.sawtooth.ahacentralserver.services.filerightresolver.IFileRightResolver;
 import com.sawtooth.ahacentralserver.services.fileupdater.IFileUpdater;
 import com.sawtooth.ahacentralserver.services.fileuploader.IFileUploader;
 import com.sawtooth.ahacentralserver.storage.IStorage;
@@ -40,16 +42,18 @@ public class FileController {
     private final IFileDeleter fileDeleter;
     private final IFilePathProcessor filePathProcessor;
     private final IStorage storage;
+    private final IFileRightResolver fileRightResolver;
 
     @Autowired
     public FileController(IFileUploader fileUploader, IStorage storage, IFileResourceComposer fileResourceComposer,
-        IFileUpdater fileUpdater, IFileDeleter fileDeleter, IFilePathProcessor filePathProcessor) {
+        IFileUpdater fileUpdater, IFileDeleter fileDeleter, IFilePathProcessor filePathProcessor, IFileRightResolver fileRightResolver) {
         this.fileUploader = fileUploader;
         this.storage = storage;
         this.fileResourceComposer = fileResourceComposer;
         this.fileUpdater = fileUpdater;
         this.fileDeleter = fileDeleter;
         this.filePathProcessor = filePathProcessor;
+        this.fileRightResolver = fileRightResolver;
     }
 
     private String GetFileName(HttpServletRequest request) {
@@ -68,6 +72,8 @@ public class FileController {
             model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
             if (storage.GetRepository(IFileRepository.class).IsFileExists(model.file().getOriginalFilename(), model.path())) {
                 file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
+                if (!fileRightResolver.Resolve("write", principal.getName(), file))
+                    return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(result));
                 if (fileUpdater.Update(model, file))
                     return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
             }
@@ -89,11 +95,15 @@ public class FileController {
     @GetMapping("/file/get/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<Resource>> Get(HttpServletRequest request) {
+    public CompletableFuture<ResponseEntity<Resource>> Get(HttpServletRequest request, Principal principal) {
         java.io.File tempFile;
         String path = filePathProcessor.GetFilePath(request, "/api/file/file/get"), name = GetFileName(request);
+        File file;
 
         try {
+            file = storage.GetRepository(IFileRepository.class).Get(path, name);
+            if (!fileRightResolver.Resolve("read", principal.getName(), file))
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
             if ((tempFile = fileResourceComposer.Compose(storage.GetRepository(IFileRepository.class).Get(path, name))) != null) {
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).contentLength(tempFile.length())
                     .header("Content-Disposition", String.format("attachment; filename=\"%s\"", name))
@@ -115,7 +125,7 @@ public class FileController {
     @PatchMapping("/file/patch/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(@RequestBody JsonPatch patch, HttpServletRequest request) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Patch(@RequestBody JsonPatch patch, HttpServletRequest request, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
         String path = filePathProcessor.GetFilePath(request, "/api/file/file/patch"), name = GetFileName(request);
         ObjectMapper objectMapper = new ObjectMapper();
@@ -123,6 +133,8 @@ public class FileController {
 
         try {
             file = storage.GetRepository(IFileRepository.class).Get(path, name);
+            if (!fileRightResolver.Resolve("write", principal.getName(), file))
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
             storage.GetRepository(IFileRepository.class).Update(objectMapper.treeToValue(patch.apply(
                 objectMapper.convertValue(file, JsonNode.class)), File.class));
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NO_CONTENT).body(result));
@@ -144,13 +156,15 @@ public class FileController {
     @DeleteMapping("/file/delete/**")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest request) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(HttpServletRequest request, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
         String path = filePathProcessor.GetFilePath(request, "/api/file/file/delete"), name = GetFileName(request);
         File file;
 
         try {
             file = storage.GetRepository(IFileRepository.class).Get(path, name);
+            if (!fileRightResolver.Resolve("write", principal.getName(), file))
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
             storage.GetRepository(IFileRepository.class).Delete(file);
             if (fileDeleter.Delete(file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
@@ -173,9 +187,7 @@ public class FileController {
     @GetMapping("/all/get/**")
     @ResponseBody
     public CompletableFuture<ResponseEntity<DirectoryItems>> GetAll(HttpServletRequest request) {
-        String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace("/api/file/all/get/", "").replace("root", "/")
-            .replace("//", "/").replace("%20", " ");
+        String path = filePathProcessor.GetFilePath(request, "/api/file/all/get/");
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
 
@@ -199,9 +211,7 @@ public class FileController {
     @GetMapping("/directories/get/**")
     @ResponseBody
     public CompletableFuture<ResponseEntity<DirectoryItems>> GetDirectories(HttpServletRequest request) {
-        String path = ((String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE))
-            .replace("/api/file/directories/get/", "").replace("root", "/")
-            .replace("//", "/").replace("%20", " ");
+        String path = filePathProcessor.GetFilePath(request, "/api/file/directories/get/");
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
 

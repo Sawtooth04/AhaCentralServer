@@ -15,4 +15,6 @@ public interface IGroupFileRightRepository extends IRepository {
     public void Add(GroupFileRight groupFileRight);
 
     public void Delete(GroupFileRight groupFileRight);
+
+    public boolean IsFileHaveGroupRights(File file);
 }

@@ -4,19 +4,22 @@ import Button from "../UI/Button/Button";
 import CsrfFetch from "../../utils/CsrfFetch";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
 
-const DeleteFileForm = ({ isHidden, setIsHidden, buildPath, selectedFilesBuffer, toPrevDirectory, onDelete }) => {
+const DeleteFileForm = ({ isHidden, setIsHidden, buildPath, selectedFilesBuffer, onDelete, forbidden }) => {
     async function deleteFile(file, path) {
-        await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-delete")}/${path}/${file.name}`, {
+        let response = await CsrfFetch(`${await CentralServerLinksProvider.getLink("file-delete")}/${path}/${file.name}`, {
             method: 'delete'
         });
+        return response.status !== 403;
     }
 
     async function deleteFiles() {
         let path = buildPath();
         for (let file of selectedFilesBuffer)
-            await deleteFile(file, path);
+            if (!(await deleteFile(file, path))) {
+                forbidden();
+                break;
+            }
         setIsHidden(true);
-        toPrevDirectory();
         await onDelete();
     }
 

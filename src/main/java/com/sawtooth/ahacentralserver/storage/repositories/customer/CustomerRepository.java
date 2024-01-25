@@ -2,6 +2,7 @@ package com.sawtooth.ahacentralserver.storage.repositories.customer;
 
 import com.sawtooth.ahacentralserver.models.customer.Customer;
 import com.sawtooth.ahacentralserver.models.customer.CustomerMapper;
+import com.sawtooth.ahacentralserver.models.file.File;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SingleColumnRowMapper;
 
@@ -37,4 +38,11 @@ public class CustomerRepository implements ICustomerRepository {
         return Objects.requireNonNull(template.queryForObject("SELECT * FROM get_customers_count()",
             new SingleColumnRowMapper<>()));
     }
+
+    @Override
+    public boolean IsCustomerHaveFileRight(Customer customer, File file, String fileRight) {
+        return Boolean.TRUE.equals(template.queryForObject("SELECT * FROM is_customer_have_file_right(?, ?, ?)",
+            new SingleColumnRowMapper<>(), customer.customerID(), file.fileID(), fileRight));
+    }
+
 }

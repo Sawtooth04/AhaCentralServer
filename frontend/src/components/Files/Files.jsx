@@ -12,6 +12,7 @@ import ReplaceFileForm from "../ReplaceFileForm/ReplaceFileForm";
 import DownloadFileForm from "../DownloadFileForm/DownloadFileForm";
 import PutFileForm from "../PutFileForm/PutFileForm";
 import ChangeFilePermissionsForm from "../ChangeFilePermissionsForm/ChangeFilePermissionsForm";
+import FileRightForbiddenForm from "../FileRightForbiddenForm/FileRightForbiddenForm";
 
 const Files = () => {
     const [pathParts, setPathParts] = useState(['root']);
@@ -24,6 +25,7 @@ const Files = () => {
     const [isDownloadFileFormHidden, setIsDownloadFileFormHidden] = useState(true);
     const [isPutFileFormHidden, setIsPutFileFormHidden] = useState(true);
     const [isChangeFilePermissionsFormHidden, setIsChangeFilePermissionsFormHidden] = useState(true);
+    const [isFileOperationForbiddenFormHidden, setIsFileOperationForbiddenFormHidden] = useState(true);
 
     const fileInputRef = useRef(null);
 
@@ -40,7 +42,7 @@ const Files = () => {
     }
 
     async function getDirectoryItems() {
-        let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-all-get')}/${buildPathCallback()}`);
+        let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-all-get')}/${buildPathCallback()}/`);
         setDirectoryItems((await response.json()).items);
     }
 
@@ -85,6 +87,10 @@ const Files = () => {
         setPathParts([...pathParts]);
     }
 
+    function forbidden() {
+        setIsFileOperationForbiddenFormHidden(false);
+    }
+
     async function refresh() {
         await getDirectoryItemsCallback();
         setSelectedFilesBuffer([]);
@@ -93,19 +99,20 @@ const Files = () => {
     return (
         <div className={styles.files}>
             <DeleteFileForm isHidden={isDeleteFormHidden} setIsHidden={setIsDeleteFormHidden} selectedFilesBuffer={selectedFilesBuffer}
-                buildPath={buildPathCallback} toPrevDirectory={toPrevDirectory} onDelete={refresh}/>
+                buildPath={buildPathCallback} onDelete={refresh} forbidden={forbidden}/>
             <CreateDirectoryForm setPathParts={setPathParts} pathParts={pathParts} isHidden={isCreateDirectoryFormHidden}
                 setIsHidden={setIsCreateDirectoryFormHidden}/>
             <RenameFileForm isHidden={isRenameFileFormHidden} buildPath={buildPathCallback} file={selectedFilesBuffer[0]}
-                setIsHidden = {setIsRenameFileFormHidden} onRename={refresh}/>
+                setIsHidden = {setIsRenameFileFormHidden} onRename={refresh} forbidden={forbidden}/>
             <ReplaceFileForm isHidden={isReplaceFileFormHidden} setIsHidden={setIsReplaceFileFormHidden} files={selectedFilesBuffer}
-                onReplace={refresh} currentPath={buildPathCallback()}/>
+                onReplace={refresh} currentPath={buildPathCallback()} forbidden={forbidden}/>
             <DownloadFileForm isHidden={isDownloadFileFormHidden} setIsHidden={setIsDownloadFileFormHidden} buildPath={buildPathCallback}
                 selectedFilesBuffer={selectedFilesBuffer}/>
             <PutFileForm isHidden={isPutFileFormHidden} setIsHidden={setIsPutFileFormHidden} buildPath={buildPathCallback}
                 file={fileInputRef.current?.files[0]}/>
             <ChangeFilePermissionsForm isHidden={isChangeFilePermissionsFormHidden} setIsHidden={setIsChangeFilePermissionsFormHidden}
-                buildPath={buildPathCallback} file={selectedFilesBuffer[0]}/>
+                buildPath={buildPathCallback} file={selectedFilesBuffer[0]} forbidden={forbidden}/>
+            <FileRightForbiddenForm isHidden={isFileOperationForbiddenFormHidden} setIsHidden={setIsFileOperationForbiddenFormHidden}/>
             <input type={"file"} hidden={true} ref={fileInputRef} onChange={putFile}/>
             <FilesHeading putFile={onPutFileClick} addDirectory={onAddDirectoryClick} deleteFiles={deleteSelectedFiles} items={directoryItems}
                 renameFile={renameSelectedFile} replaceFiles={replaceSelectedFiles} selectedFilesBuffer={selectedFilesBuffer}

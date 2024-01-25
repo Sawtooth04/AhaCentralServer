@@ -7,6 +7,7 @@ import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRightDeleteM
 import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRightPostModel;
 import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRights;
 import com.sawtooth.ahacentralserver.services.filepathprocessor.IFilePathProcessor;
+import com.sawtooth.ahacentralserver.services.filerightresolver.IFileRightResolver;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.file.IFileRepository;
@@ -29,24 +30,28 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class GroupFileRightController {
     private final IStorage storage;
     private final IFilePathProcessor filePathProcessor;
+    private final IFileRightResolver fileRightResolver;
 
     @Autowired
-    public GroupFileRightController(IStorage storage, IFilePathProcessor filePathProcessor) {
+    public GroupFileRightController(IStorage storage, IFilePathProcessor filePathProcessor, IFileRightResolver fileRightResolver) {
         this.storage = storage;
         this.filePathProcessor = filePathProcessor;
+        this.fileRightResolver = fileRightResolver;
     }
 
     @PostMapping("/post")
     @ResponseBody
     @Async
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Post(@RequestBody GroupFileRightPostModel model) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Post(@RequestBody GroupFileRightPostModel model, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
         File file;
 
         try {
             model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
-            result.add(linkTo(methodOn(GroupFileRightController.class).Post(null)).withSelfRel());
+            result.add(linkTo(methodOn(GroupFileRightController.class).Post(null, null)).withSelfRel());
             file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.fileName());
+            if (!fileRightResolver.Resolve("write", principal.getName(), file))
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
             storage.GetRepository(IGroupFileRightRepository.class).Add(model.groupFileRight().WithFileID(file.fileID()));
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
@@ -79,14 +84,16 @@ public class GroupFileRightController {
     @DeleteMapping("/delete")
     @ResponseBody
     @Async
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(@RequestBody GroupFileRightDeleteModel model) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(@RequestBody GroupFileRightDeleteModel model, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
         File file;
 
         try {
             model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
-            result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null)).withSelfRel());
+            result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withSelfRel());
             file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.fileName());
+            if (!fileRightResolver.Resolve("write", principal.getName(), file))
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
             storage.GetRepository(IGroupFileRightRepository.class).Delete(model.groupFileRight().WithFileID(file.fileID()));
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
