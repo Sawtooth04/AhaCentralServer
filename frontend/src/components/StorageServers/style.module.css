@@ -1,0 +1,9 @@
+.storageServers {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  flex-grow: 1;
+  height: 100%;
+}
+
+/*# sourceMappingURL=style.module.css.map */

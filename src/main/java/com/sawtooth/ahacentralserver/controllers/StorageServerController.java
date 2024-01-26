@@ -1,6 +1,7 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.storageserver.StorageServer;
+import com.sawtooth.ahacentralserver.models.storageserver.StorageServers;
 import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServerCondition;
 import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServersConditions;
 import com.sawtooth.ahacentralserver.storage.IStorage;
@@ -42,6 +43,38 @@ public class StorageServerController {
                 links.getLink("system-info").get().getHref())).retrieve().bodyToMono(StorageServerCondition.class)
                 .block()).WithStorageServer(server);
         return null;
+    }
+
+    @GetMapping("/storage/get")
+    @Async
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<StorageServers>> Get() {
+        StorageServers result = new StorageServers();
+
+        try {
+            result.add(linkTo(methodOn(StorageServerController.class).Get()).withSelfRel());
+            result.servers = storage.GetRepository(IStorageServerRepository.class).Get();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+        }
+    }
+
+    @GetMapping("/backup/get")
+    @Async
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<StorageServers>> GetBackup() {
+        StorageServers result = new StorageServers();
+
+        try {
+            result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withSelfRel());
+            result.servers = storage.GetRepository(IStorageServerRepository.class).GetBackup();
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+        }
     }
 
     @PutMapping("/put")

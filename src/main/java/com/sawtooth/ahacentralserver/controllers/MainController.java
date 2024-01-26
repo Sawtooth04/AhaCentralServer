@@ -31,6 +31,8 @@ public class MainController {
         result.add(linkTo(methodOn(FileController.class).GetAll()).withRel("file-all-get"));
         result.add(linkTo(methodOn(FileController.class).GetDirectories()).withRel("file-directories-get"));
         result.add(linkTo(methodOn(RegistrationController.class).Register(null)).withRel("registration"));
+        result.add(linkTo(methodOn(StorageServerController.class).Get()).withRel("storage-server-get"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withRel("storage-server-backup-get"));
         result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("storage-server-put"));
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("storage-servers-conditions"));
         result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("central-server-general"));

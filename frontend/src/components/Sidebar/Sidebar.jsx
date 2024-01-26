@@ -9,8 +9,7 @@ const Sidebar = () => {
             <SidebarItem text={'Файлы'} link={'/files'} src={'assets/icons/file-line.png'}/>
             <SidebarItem text={'Пользователи'} link={'/'} src={'assets/icons/contacts.png'}/>
             <SidebarItem text={'Группы'} link={'/groups'} src={'assets/icons/group_24px.png'}/>
-            <SidebarItem text={'Центральный сервер'} link={'/'} src={'assets/icons/server__117.png'}/>
-            <SidebarItem text={'Серверы хранения'} link={'/'} src={'assets/icons/server.png'}/>
+            <SidebarItem text={'Серверы хранения'} link={'/storage-servers'} src={'assets/icons/server.png'}/>
             <SidebarItem text={'О системе'} link={'/'} src={'assets/icons/info_outline.png'}/>
         </div>
     );

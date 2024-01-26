@@ -1,0 +1,43 @@
+.storageServersListItem {
+  display: flex;
+  position: relative;
+  width: 96%;
+  height: 2.5vh;
+  margin-bottom: 0.92vh;
+  padding: 0 2%;
+  cursor: pointer;
+}
+
+.storageServersListItem:first-child {
+  margin-top: 0.92vh;
+}
+
+.selectedStorageServersListItem {
+  composes: storageServersListItem;
+  background-color: rgba(70, 77, 92, 0.2);
+}
+
+.storageServersListItem:after {
+  content: "";
+  position: absolute;
+  bottom: -10%;
+  left: 2%;
+  width: 96%;
+  height: 9%;
+  opacity: 0;
+  background-color: #CDCDCD;
+  transition: opacity 200ms ease-out;
+}
+
+.storageServersListItem:hover:after {
+  opacity: 1;
+}
+
+.storageServersListItemText {
+  width: 20%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
+/*# sourceMappingURL=style.module.css.map */
