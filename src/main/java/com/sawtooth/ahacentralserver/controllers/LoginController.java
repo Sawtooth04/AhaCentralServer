@@ -29,16 +29,12 @@ import static org.springframework.security.web.context.HttpSessionSecurityContex
 @RequestMapping("/api/login")
 public class LoginController {
     private final IStorage storage;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final SecurityContextRepository securityContextRepository;
 
     @Autowired
-    public LoginController(IStorage storage, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public LoginController(IStorage storage, AuthenticationManager authenticationManager) {
         this.storage = storage;
-        this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        securityContextRepository = new HttpSessionSecurityContextRepository();
     }
 
     @PostMapping("/login")
@@ -57,8 +53,7 @@ public class LoginController {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).build());
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
         }
-        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 }

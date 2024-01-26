@@ -1,0 +1,43 @@
+.registration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: #F0F0F0;
+}
+
+.registrationLogo {
+  width: 15%;
+  height: auto;
+  margin-top: 5.5%;
+}
+
+.registrationSignWrapper {
+  display: flex;
+  margin-top: 1.5%;
+}
+
+.registrationSign {
+  margin: 0 0.15em;
+  color: #464D5C;
+  font-family: "TTNormsPro", "sans-serif";
+  font-weight: bold;
+  font-size: 36px;
+}
+
+.registrationSign:first-child, .registrationSign:last-child {
+  color: #95C71F;
+}
+
+.registrationTextInputsWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 20.8%;
+}
+.registrationTextInputsWrapper > * {
+  margin-top: 7%;
+}
+
+/*# sourceMappingURL=style.module.css.map */

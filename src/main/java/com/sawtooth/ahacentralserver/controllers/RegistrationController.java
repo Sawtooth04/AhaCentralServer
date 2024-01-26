@@ -7,6 +7,8 @@ import com.sawtooth.ahacentralserver.services.customervalidator.registrationvali
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -30,17 +32,18 @@ public class RegistrationController {
     @PostMapping("/register")
     @ResponseBody
     @Async
-    public CompletableFuture<RegistrationValidationResults> Register(@RequestBody CustomerRegistrationModel registrationModel) {
+    public CompletableFuture<ResponseEntity<RegistrationValidationResults>> Register(@RequestBody CustomerRegistrationModel registrationModel) {
         try {
             if (validator.Validate(registrationModel)) {
                 Customer customer = new Customer(-1, registrationModel.name(),
                     passwordEncoder.encode(registrationModel.password()));
                 storage.GetRepository(ICustomerRepository.class).Add(customer);
+                return CompletableFuture.completedFuture(ResponseEntity.ok(null));
             }
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return CompletableFuture.completedFuture(validator.GetResults());
+        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(validator.GetResults()));
     }
 }

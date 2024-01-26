@@ -1,0 +1,15 @@
+.errorMessage {
+  display: block;
+  margin-bottom: 0;
+  color: #AD1B1B;
+  text-align: center;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
+.errorMessageHidden {
+  display: none;
+  composes: errorMessage;
+}
+
+/*# sourceMappingURL=style.module.css.map */
