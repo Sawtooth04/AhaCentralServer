@@ -14,4 +14,6 @@ public interface ICustomerRepository extends IRepository {
     public int Count();
 
     public boolean IsCustomerHaveFileRight(Customer customer, File file, String fileRight);
+
+    public boolean IsCustomerHaveRole(Customer customer, String role);
 }

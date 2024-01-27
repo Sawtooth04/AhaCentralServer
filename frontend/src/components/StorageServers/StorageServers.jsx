@@ -6,6 +6,7 @@ import csrfFetch from "../../utils/CsrfFetch";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
 import AddStorageServerForm from "../AddStorageServerForm/AddStorageServerForm";
 import DeleteStorageServerForm from "../DeleteStorageServerForm/DeleteStorageServerForm";
+import AdminComponent from "../AdminComponent/AdminComponent";
 
 const StorageServers = () => {
     const [storageServers, setStorageServers] = useState([]);
@@ -43,15 +44,17 @@ const StorageServers = () => {
     }
 
     return (
-        <div className={styles.storageServers}>
-            <AddStorageServerForm isHidden={isAddStorageServerFormHidden} setIsHidden={setIsAddStorageServerFormHidden}
-                onAdd={refresh}/>
-            <DeleteStorageServerForm isHidden={isDeleteStorageServerFormHidden} setIsHidden={setIsDeleteStorageServerFormHidden}
-                selectedStorageServersBuffer={selectedServersBuffer} onDelete={refresh}/>
-            <StorageServersHeading selectedServers={selectedServersBuffer} addServer={addStorageServer} deleteServer={deleteStorageServer}/>
-            <StorageServersList storage={storageServers} backup={backupServers} serversBuffer={selectedServersBuffer}
-                setServersBuffer={setSelectedServersBuffer}/>
-        </div>
+        <AdminComponent>
+            <div className={styles.storageServers}>
+                <AddStorageServerForm isHidden={isAddStorageServerFormHidden} setIsHidden={setIsAddStorageServerFormHidden}
+                    onAdd={refresh}/>
+                <DeleteStorageServerForm isHidden={isDeleteStorageServerFormHidden} setIsHidden={setIsDeleteStorageServerFormHidden}
+                    selectedStorageServersBuffer={selectedServersBuffer} onDelete={refresh}/>
+                <StorageServersHeading selectedServers={selectedServersBuffer} addServer={addStorageServer} deleteServer={deleteStorageServer}/>
+                <StorageServersList storage={storageServers} backup={backupServers} serversBuffer={selectedServersBuffer}
+                    setServersBuffer={setSelectedServersBuffer}/>
+            </div>
+        </AdminComponent>
     );
 };
 

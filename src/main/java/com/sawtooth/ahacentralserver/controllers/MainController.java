@@ -48,6 +48,7 @@ public class MainController {
         result.add(linkTo(methodOn(GroupFileRightController.class).Get(null, null, null)).withRel("group-file-right-get"));
         result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withRel("group-file-right-delete"));
         result.add(linkTo(methodOn(StorageServerStatusController.class).Get()).withRel("storage-server-status-get"));
+        result.add(linkTo(methodOn(CustomerRoleController.class).Get(null, null)).withRel("customer-role-get"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

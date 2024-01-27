@@ -6,12 +6,14 @@ import Main from "../Main/Main";
 import Files from "../Files/Files";
 import Groups from "../Groups/Groups";
 import StorageServers from "../StorageServers/StorageServers";
+import About from "../About/About";
 
 const Content = () => {
     return (
         <div className={styles.content}>
             <Sidebar/>
             <Routes>
+                <Route path="/about" element={<About/>}/>
                 <Route path="/storage-servers" element={<StorageServers/>}/>
                 <Route path="/groups" element={<Groups/>}/>
                 <Route path="/files" element={<Files/>}/>

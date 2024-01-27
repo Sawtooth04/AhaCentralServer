@@ -45,4 +45,9 @@ public class CustomerRepository implements ICustomerRepository {
             new SingleColumnRowMapper<>(), customer.customerID(), file.fileID(), fileRight));
     }
 
+    @Override
+    public boolean IsCustomerHaveRole(Customer customer, String role) {
+        return Boolean.TRUE.equals(template.queryForObject("SELECT * FROM is_customer_have_role(?, ?)",
+            new SingleColumnRowMapper<>(), customer.customerID(), role));
+    }
 }
