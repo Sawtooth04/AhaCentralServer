@@ -49,6 +49,11 @@ public class StorageServerRepository implements IStorageServerRepository {
     }
 
     @Override
+    public void Delete(int storageServerID) {
+        template.queryForObject("SELECT * FROM delete_storage_server(?)", new SingleColumnRowMapper<>(), storageServerID);
+    }
+
+    @Override
     public int StorageCount() {
         return Objects.requireNonNull(template.queryForObject("SELECT * FROM get_storage_servers_count()",
             new SingleColumnRowMapper<>()));

@@ -77,22 +77,20 @@ public class StorageServerController {
         }
     }
 
-    @PutMapping("/put")
+    @PostMapping("/post")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(@RequestBody StorageServer model) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Post(@RequestBody StorageServer model) {
         RepresentationModel<?> result = new RepresentationModel<>();
 
-        result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null)).withSelfRel());
         try {
-            storage.GetRepository(IStorageServerRepository.class).Add(model.WithStorageServerStatusID(
-                storage.GetRepository(IStorageServerStatusRepository.class).Get("storage").storageServerStatusID()
-            ));
+            storage.GetRepository(IStorageServerRepository.class).Add(model);
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
         catch (Exception exception) {
-            System.out.println(exception.getMessage());
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
         }
-        return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 
     @GetMapping("/condition/get")
@@ -102,7 +100,7 @@ public class StorageServerController {
         StorageServersConditions result = new StorageServersConditions();
 
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withSelfRel());
-        result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("put"));
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null)).withRel("post"));
         try {
             List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
             for (StorageServer server : servers)
@@ -112,5 +110,21 @@ public class StorageServerController {
             System.out.println(exception.getMessage());
         }
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+    }
+
+    @DeleteMapping("/delete/{storageServerID}")
+    @Async
+    @ResponseBody
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(@PathVariable Integer storageServerID) {
+        RepresentationModel<?> result = new RepresentationModel<>();
+
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null)).withSelfRel());
+        try {
+            storage.GetRepository(IStorageServerRepository.class).Delete(storageServerID);
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+        }
+        catch (Exception exception) {
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
+        }
     }
 }

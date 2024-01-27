@@ -33,8 +33,9 @@ public class MainController {
         result.add(linkTo(methodOn(RegistrationController.class).Register(null)).withRel("registration"));
         result.add(linkTo(methodOn(StorageServerController.class).Get()).withRel("storage-server-get"));
         result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withRel("storage-server-backup-get"));
-        result.add(linkTo(methodOn(StorageServerController.class).Put(null)).withRel("storage-server-put"));
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null)).withRel("storage-server-post"));
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("storage-servers-conditions"));
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null)).withRel("storage-server-delete"));
         result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("central-server-general"));
         result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withRel("central-server-available-servers"));
         result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("group-get"));
@@ -46,6 +47,7 @@ public class MainController {
         result.add(linkTo(methodOn(GroupFileRightController.class).Post(null, null)).withRel("group-file-right-post"));
         result.add(linkTo(methodOn(GroupFileRightController.class).Get(null, null, null)).withRel("group-file-right-get"));
         result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withRel("group-file-right-delete"));
+        result.add(linkTo(methodOn(StorageServerStatusController.class).Get()).withRel("storage-server-status-get"));
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
     }
 }

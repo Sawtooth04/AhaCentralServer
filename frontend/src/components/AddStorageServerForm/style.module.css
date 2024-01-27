@@ -1,0 +1,26 @@
+.addStorageServerForm {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+.addStorageServerForm > * > * {
+  margin-top: 11%;
+}
+
+.storageServerStatusList {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+}
+.storageServerStatusList > *:first-child + * {
+  margin-top: 0.92vh;
+}
+
+.storageServerStatusListHeader {
+  width: 20vw;
+  margin: 0;
+  font-family: "TTNormsPro SemiBold", "sans-serif";
+  font-size: 20px;
+}
+
+/*# sourceMappingURL=style.module.css.map */

@@ -16,7 +16,6 @@ const FilesList = ({ items, setPathParts, filesBuffer, setFilesBuffer, pathParts
             filesBuffer.splice(index, 1);
             setFilesBuffer([...filesBuffer]);
         }
-
     }
 
     return (

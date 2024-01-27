@@ -19,6 +19,8 @@ public interface IStorageServerRepository extends IRepository {
 
     public List<StorageServer> GetByChunk(Chunk chunk);
 
+    public void Delete(int storageServerID);
+
     public int StorageCount();
 
     public int BackupCount();

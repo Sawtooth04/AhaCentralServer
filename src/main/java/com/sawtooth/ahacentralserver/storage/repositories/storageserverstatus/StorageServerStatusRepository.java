@@ -4,12 +4,19 @@ import com.sawtooth.ahacentralserver.models.storageserverstatus.StorageServerSta
 import com.sawtooth.ahacentralserver.models.storageserverstatus.StorageServerStatusMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+import java.util.List;
+
 public class StorageServerStatusRepository implements IStorageServerStatusRepository {
     private JdbcTemplate template;
 
     @Override
     public void SetJbdcTemplate(JdbcTemplate template) {
         this.template = template;
+    }
+
+    @Override
+    public List<StorageServerStatus> Get() {
+        return template.query("SELECT * FROM get_storage_server_statuses()", new StorageServerStatusMapper());
     }
 
     @Override
