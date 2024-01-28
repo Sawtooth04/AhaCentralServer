@@ -60,7 +60,7 @@ const AddStorageServerForm = ({ isHidden, setIsHidden, onAdd }) => {
 
     return (
         <div className={styles.addStorageServerForm}>
-            <PopUpForm header={'Создание группы'} isHidden={isHidden}>
+            <PopUpForm header={'Добавление сервера хранения'} isHidden={isHidden}>
                 <TextInput type={'text'} placeholder={'Название'} inputRef={nameRef}/>
                 <TextInput type={'text'} placeholder={'Адрес'} inputRef={addressRef}/>
                 <div className={styles.storageServerStatusList}>

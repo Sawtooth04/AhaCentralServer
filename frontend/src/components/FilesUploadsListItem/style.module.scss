@@ -1,0 +1,19 @@
+@import "../../colors";
+
+.filesUploadsListItem {
+  display: flex;
+  position: relative;
+  width: 96%;
+  height: 2.5vh;
+  margin-bottom: 0.92vh;
+  padding: 0 2%;
+  cursor: pointer;
+  background-color: burlywood;
+}
+
+.filesUploadsListItemText {
+  width: 20%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}

@@ -1,0 +1,16 @@
+.filesUploads {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  flex-grow: 1;
+  height: 100%;
+}
+
+.filesUploadsHeading {
+  margin: 2.7vh 0 2.7vh 2%;
+  font-family: "TTNormsPro SemiBold", "sans-serif";
+  font-weight: normal;
+  font-size: 24px;
+}
+
+/*# sourceMappingURL=style.module.css.map */

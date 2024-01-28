@@ -1,0 +1,21 @@
+.filesUploadsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.uploads {
+  display: flex;
+  flex-direction: column;
+  max-height: 72vh;
+  overflow-y: auto;
+}
+.uploads::-webkit-scrollbar {
+  width: 0.5vw;
+  height: 0.5vw;
+}
+.uploads::-webkit-scrollbar-thumb {
+  background-color: #CDCDCD;
+  border-radius: 0.5vw;
+}
+
+/*# sourceMappingURL=style.module.css.map */

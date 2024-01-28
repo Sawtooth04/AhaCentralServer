@@ -1,0 +1,15 @@
+@import "../../colors";
+@import "../../mixins/scroll";
+
+.filesUploadsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.uploads {
+  @include scroll(0.5vw);
+  display: flex;
+  flex-direction: column;
+  max-height: 72vh;
+  overflow-y: auto;
+}

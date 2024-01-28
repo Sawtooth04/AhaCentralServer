@@ -14,7 +14,7 @@ import PutFileForm from "../PutFileForm/PutFileForm";
 import ChangeFilePermissionsForm from "../ChangeFilePermissionsForm/ChangeFilePermissionsForm";
 import FileRightForbiddenForm from "../FileRightForbiddenForm/FileRightForbiddenForm";
 
-const Files = () => {
+const Files = ({ uploads, setUploads }) => {
     const [pathParts, setPathParts] = useState(['root']);
     const [directoryItems, setDirectoryItems] = useState([]);
     const [selectedFilesBuffer, setSelectedFilesBuffer] = useState([]);
@@ -82,11 +82,6 @@ const Files = () => {
         setIsChangeFilePermissionsFormHidden(false);
     }
 
-    function toPrevDirectory() {
-        pathParts.splice(-1, 1);
-        setPathParts([...pathParts]);
-    }
-
     function forbidden() {
         setIsFileOperationForbiddenFormHidden(false);
     }
@@ -109,7 +104,7 @@ const Files = () => {
             <DownloadFileForm isHidden={isDownloadFileFormHidden} setIsHidden={setIsDownloadFileFormHidden} buildPath={buildPathCallback}
                 selectedFilesBuffer={selectedFilesBuffer}/>
             <PutFileForm isHidden={isPutFileFormHidden} setIsHidden={setIsPutFileFormHidden} buildPath={buildPathCallback}
-                file={fileInputRef.current?.files[0]}/>
+                file={fileInputRef.current?.files[0]} uploads={uploads} setUploads={setUploads}/>
             <ChangeFilePermissionsForm isHidden={isChangeFilePermissionsFormHidden} setIsHidden={setIsChangeFilePermissionsFormHidden}
                 buildPath={buildPathCallback} file={selectedFilesBuffer[0]} forbidden={forbidden}/>
             <FileRightForbiddenForm isHidden={isFileOperationForbiddenFormHidden} setIsHidden={setIsFileOperationForbiddenFormHidden}/>

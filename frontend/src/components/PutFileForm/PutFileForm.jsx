@@ -6,8 +6,9 @@ import csrfFetch from "../../utils/CsrfFetch";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
 import CsrfFetch from "../../utils/CsrfFetch";
 import GroupFileRightsList from "../GroupFileRightsList/GroupFileRightsList";
+import buildCsrfXhr from "../../utils/CsrfXhr";
 
-const PutFileForm = ({ isHidden, setIsHidden, file, buildPath }) => {
+const PutFileForm = ({ isHidden, setIsHidden, file, buildPath, uploads, setUploads }) => {
     const [groups, setGroups] = useState([]);
     const [fileRights, setFileRights] = useState([]);
     const [groupsFileRights, setGroupsFileRights] = useState({});
@@ -52,15 +53,10 @@ const PutFileForm = ({ isHidden, setIsHidden, file, buildPath }) => {
 
     async function putFile() {
         let formData = new FormData(), path = buildPath();
-        formData.append('file', file)
-        formData.append('path', `${path}`)
-        let response = await csrfFetch(`${await CentralServerLinksProvider.getLink('file-put')}`, {
-            method: 'put',
-            body: formData
-        });
-        if (response.ok)
-            await postGroupsFileRights(path);
-        setIsHidden(true);
+
+        formData.append('file', file);
+        formData.append('path', `${path}`);
+        setUploads([...uploads, {name: file.name, formData: formData, onSuccess: () => postGroupsFileRights(path)}]);
     }
 
     function isFileRightIncluded(groupID, fileRightID) {
