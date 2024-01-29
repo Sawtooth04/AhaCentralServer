@@ -35,6 +35,8 @@ public class Space {
                 basis /= DEGREE_BASIS;
                 degree++;
             }
+        else if (basis == 0)
+            degree = 1;
         else
             while ((int) (basis * DEGREE_BASIS) == 0) {
                 basis *= DEGREE_BASIS;

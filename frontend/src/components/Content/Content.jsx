@@ -23,11 +23,11 @@ const Content = () => {
             <UploadsContext.Provider value={uploads}>
                 <Routes>
                     <Route path="/uploads" element={<FilesUploads/>}/>
-                    <Route path="/about" element={<About/>}/>
-                    <Route path="/storage-servers" element={<StorageServers/>}/>
-                    <Route path="/groups" element={<Groups/>}/>
-                    <Route path="/files" element={<Files uploads={uploads} setUploads = {setUploads}/>}/>
-                    <Route path="*" element={<Main/>}/>
+                    <Route path="/about" element={<React.StrictMode><About/></React.StrictMode>}/>
+                    <Route path="/storage-servers" element={<React.StrictMode><StorageServers/></React.StrictMode>}/>
+                    <Route path="/groups" element={<React.StrictMode><Groups/></React.StrictMode>}/>
+                    <Route path="/files" element={<React.StrictMode><Files uploads={uploads} setUploads = {setUploads}/></React.StrictMode>}/>
+                    <Route path="*" element={<React.StrictMode><Main/></React.StrictMode>}/>
                 </Routes>
             </UploadsContext.Provider>
         </div>

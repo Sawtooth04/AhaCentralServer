@@ -27,10 +27,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.WebAsyncTask;
 import org.springframework.web.servlet.HandlerMapping;
 
 import java.io.FileInputStream;
 import java.security.Principal;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
@@ -61,7 +63,7 @@ public class FileController {
             .replaceAll("(.*/)", "");
     }
 
-    @PutMapping("/file/put")
+    /*@PutMapping("/file/put")
     @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(FileUploadModel model, Principal principal) {
@@ -84,9 +86,39 @@ public class FileController {
         catch (Exception exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
         }
+    }*/
+
+    private ResponseEntity<RepresentationModel<?>> PutCallable(FileUploadModel model, Principal principal) {
+        RepresentationModel<?> result = new RepresentationModel<>();
+        File file;
+
+        try {
+            model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
+            if (storage.GetRepository(IFileRepository.class).IsFileExists(model.file().getOriginalFilename(), model.path())) {
+                file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
+                if (!fileRightResolver.Resolve("write", principal.getName(), file))
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(result);
+                if (fileUpdater.Update(model, file))
+                    return ResponseEntity.status(HttpStatus.OK).body(result);
+            }
+            else if (fileUploader.Upload(model, storage.GetRepository(ICustomerRepository.class).Get(principal.getName()).customerID()))
+                return ResponseEntity.status(HttpStatus.CREATED).body(result);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+        catch (Exception exception) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result);
+        }
+    }
+
+    @PutMapping("/file/put")
+    @ResponseBody
+    public WebAsyncTask<ResponseEntity<RepresentationModel<?>>> Put(FileUploadModel model, Principal principal) {
+        Callable<ResponseEntity<RepresentationModel<?>>> callable = () -> PutCallable(model, principal);
+        return new WebAsyncTask<>(Long.MAX_VALUE, callable);
     }
 
     @GetMapping("/file/get")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> Get() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
@@ -117,6 +149,7 @@ public class FileController {
     }
 
     @GetMapping("/file/patch")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> Patch() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
@@ -148,6 +181,7 @@ public class FileController {
     }
 
     @GetMapping("/file/delete")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> Delete() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
@@ -179,12 +213,14 @@ public class FileController {
     }
 
     @GetMapping("/all/get")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> GetAll() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
     }
 
     @GetMapping("/all/get/**")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<DirectoryItems>> GetAll(HttpServletRequest request) {
         String path = filePathProcessor.GetFilePath(request, "/api/file/all/get/");
@@ -203,12 +239,14 @@ public class FileController {
     }
 
     @GetMapping("/directories/get")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<?>> GetDirectories() {
         return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
     }
 
     @GetMapping("/directories/get/**")
+    @Async
     @ResponseBody
     public CompletableFuture<ResponseEntity<DirectoryItems>> GetDirectories(HttpServletRequest request) {
         String path = filePathProcessor.GetFilePath(request, "/api/file/directories/get/");
