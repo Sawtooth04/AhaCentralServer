@@ -18,4 +18,20 @@
   border-radius: 0.5vw;
 }
 
+.uploadsHeading {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 96%;
+  margin-bottom: 0.92vh;
+  padding: 0 2%;
+}
+
+.uploadsHeadingText {
+  width: 40%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
 /*# sourceMappingURL=style.module.css.map */

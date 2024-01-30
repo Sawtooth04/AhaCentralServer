@@ -1,19 +1,39 @@
 .filesUploadsListItem {
   display: flex;
+  align-items: center;
   position: relative;
   width: 96%;
-  height: 2.5vh;
   margin-bottom: 0.92vh;
   padding: 0 2%;
-  cursor: pointer;
-  background-color: burlywood;
+}
+
+.filesUploadsListItem:after {
+  content: "";
+  position: absolute;
+  bottom: -10%;
+  left: 2%;
+  width: 79%;
+  height: 0.3vh;
+  opacity: 0;
+  background-color: #CDCDCD;
+  transition: opacity 200ms ease-out;
+}
+
+.filesUploadsListItem:hover:after {
+  opacity: 1;
 }
 
 .filesUploadsListItemText {
-  width: 20%;
+  width: 40%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
   font-size: 20px;
+}
+
+.filesUploadsListItemImg {
+  width: 2%;
+  height: auto;
+  cursor: pointer;
 }
 
 /*# sourceMappingURL=style.module.css.map */

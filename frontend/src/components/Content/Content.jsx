@@ -22,7 +22,7 @@ const Content = () => {
             <Sidebar/>
             <UploadsContext.Provider value={uploads}>
                 <Routes>
-                    <Route path="/uploads" element={<FilesUploads/>}/>
+                    <Route path="/uploads" element={<FilesUploads setUploads={setUploads}/>}/>
                     <Route path="/about" element={<React.StrictMode><About/></React.StrictMode>}/>
                     <Route path="/storage-servers" element={<React.StrictMode><StorageServers/></React.StrictMode>}/>
                     <Route path="/groups" element={<React.StrictMode><Groups/></React.StrictMode>}/>

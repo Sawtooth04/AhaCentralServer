@@ -2,7 +2,6 @@
   display: flex;
   position: relative;
   width: 96%;
-  height: 2.5vh;
   margin-bottom: 0.92vh;
   padding: 0 2%;
   cursor: pointer;
@@ -23,7 +22,7 @@
   bottom: -10%;
   left: 2%;
   width: 96%;
-  height: 9%;
+  height: 0.3vh;
   opacity: 0;
   background-color: #CDCDCD;
   transition: opacity 200ms ease-out;

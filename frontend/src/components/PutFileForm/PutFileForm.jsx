@@ -7,8 +7,10 @@ import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
 import CsrfFetch from "../../utils/CsrfFetch";
 import GroupFileRightsList from "../GroupFileRightsList/GroupFileRightsList";
 import buildCsrfXhr from "../../utils/CsrfXhr";
+import {useNavigate} from "react-router-dom";
 
 const PutFileForm = ({ isHidden, setIsHidden, file, buildPath, uploads, setUploads }) => {
+    const navigate = useNavigate();
     const [groups, setGroups] = useState([]);
     const [fileRights, setFileRights] = useState([]);
     const [groupsFileRights, setGroupsFileRights] = useState({});
@@ -51,12 +53,13 @@ const PutFileForm = ({ isHidden, setIsHidden, file, buildPath, uploads, setUploa
                 });
     }
 
-    async function putFile() {
+    function putFile() {
         let formData = new FormData(), path = buildPath();
 
         formData.append('file', file);
         formData.append('path', `${path}`);
         setUploads([...uploads, {name: file.name, formData: formData, onSuccess: () => postGroupsFileRights(path)}]);
+        navigate('/uploads');
     }
 
     function isFileRightIncluded(groupID, fileRightID) {

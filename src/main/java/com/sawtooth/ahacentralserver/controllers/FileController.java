@@ -199,9 +199,10 @@ public class FileController {
             file = storage.GetRepository(IFileRepository.class).Get(path, name);
             if (!fileRightResolver.Resolve("write", principal.getName(), file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
-            storage.GetRepository(IFileRepository.class).Delete(file);
-            if (fileDeleter.Delete(file))
+            if (fileDeleter.Delete(file)) {
+                storage.GetRepository(IFileRepository.class).Delete(file);
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            }
         }
         catch (EmptyResultDataAccessException exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.NOT_FOUND).body(result));
