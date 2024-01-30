@@ -1,0 +1,10 @@
+.customersHeading {
+  display: flex;
+  align-items: flex-end;
+  margin: 2.7vh 0 0 2%;
+  font-family: "TTNormsPro SemiBold", "sans-serif";
+  font-weight: normal;
+  font-size: 24px;
+}
+
+/*# sourceMappingURL=style.module.css.map */

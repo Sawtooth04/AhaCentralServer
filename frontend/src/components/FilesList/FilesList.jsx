@@ -3,7 +3,6 @@ import styles from "./style.module.css";
 import DirectoryItem from "../DirectoryItem/DirectoryItem";
 
 const FilesList = ({ items, setPathParts, filesBuffer, setFilesBuffer, pathParts }) => {
-
     function onDirectoryClick(directory) {
         setPathParts([...pathParts, directory.name]);
     }

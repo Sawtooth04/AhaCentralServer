@@ -9,6 +9,7 @@ import StorageServers from "../StorageServers/StorageServers";
 import About from "../About/About";
 import FilesUploads from "../FilesUploads/FilesUploads";
 import UploadsContext from "../../contexts/UploadsContext";
+import Customers from "../Customers/Customers";
 
 const Content = () => {
     const [uploads, setUploads] = useState([]);
@@ -22,6 +23,7 @@ const Content = () => {
             <Sidebar/>
             <UploadsContext.Provider value={uploads}>
                 <Routes>
+                    <Route path="/customers" element={<React.StrictMode><Customers/></React.StrictMode>}/>
                     <Route path="/uploads" element={<FilesUploads setUploads={setUploads}/>}/>
                     <Route path="/about" element={<React.StrictMode><About/></React.StrictMode>}/>
                     <Route path="/storage-servers" element={<React.StrictMode><StorageServers/></React.StrictMode>}/>

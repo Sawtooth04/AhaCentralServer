@@ -1,0 +1,39 @@
+@import "../../colors";
+@import "../../mixins/scroll";
+
+.customersList {
+  display: flex;
+  flex-direction: column;
+}
+
+.customersListHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 2vh 2% 0 2%;
+}
+
+.customersListHeader:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 2%;
+  width: 96%;
+  height: 3%;
+  background-color: $border_color;
+}
+
+.customersListHeaderText {
+  width: 20%;
+  margin: 0;
+  font-family: "TTNormsPro", "sans-serif";
+  font-size: 20px;
+}
+
+.customers {
+  @include scroll(0.5vw);
+  display: flex;
+  flex-direction: column;
+  max-height: 72vh;
+  overflow-y: auto;
+}
