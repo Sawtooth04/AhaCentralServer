@@ -4,7 +4,9 @@ import com.sawtooth.ahacentralserver.models.customer.CustomerRegistrationModel;
 import com.sawtooth.ahacentralserver.services.customervalidator.abstractions.IValidator;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NameFreeValidator implements IValidator {
     private final IStorage storage;
 

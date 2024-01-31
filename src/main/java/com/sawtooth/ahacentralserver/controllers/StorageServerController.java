@@ -5,6 +5,7 @@ import com.sawtooth.ahacentralserver.models.storageserver.StorageServers;
 import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServerCondition;
 import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServersConditions;
 import com.sawtooth.ahacentralserver.storage.IStorage;
+import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserverstatus.IStorageServerStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -80,13 +82,18 @@ public class StorageServerController {
     @PostMapping("/post")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Post(@RequestBody StorageServer model) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Post(Principal principal, @RequestBody StorageServer model) {
         RepresentationModel<?> result = new RepresentationModel<>();
+        ICustomerRepository customerRepository;
 
-        result.add(linkTo(methodOn(StorageServerController.class).Post(null)).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withSelfRel());
         try {
-            storage.GetRepository(IStorageServerRepository.class).Add(model);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            customerRepository = storage.GetRepository(ICustomerRepository.class);
+            if (customerRepository.IsCustomerHaveRole(customerRepository.Get(principal.getName()), "admin")) {
+                storage.GetRepository(IStorageServerRepository.class).Add(model);
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            }
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(result));
         }
         catch (Exception exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
@@ -100,7 +107,7 @@ public class StorageServerController {
         StorageServersConditions result = new StorageServersConditions();
 
         result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withSelfRel());
-        result.add(linkTo(methodOn(StorageServerController.class).Post(null)).withRel("post"));
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withRel("post"));
         try {
             List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
             for (StorageServer server : servers)
@@ -115,13 +122,18 @@ public class StorageServerController {
     @DeleteMapping("/delete/{storageServerID}")
     @Async
     @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(@PathVariable Integer storageServerID) {
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Delete(Principal principal, @PathVariable Integer storageServerID) {
         RepresentationModel<?> result = new RepresentationModel<>();
+        ICustomerRepository customerRepository;
 
-        result.add(linkTo(methodOn(StorageServerController.class).Delete(null)).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null, null)).withSelfRel());
         try {
-            storage.GetRepository(IStorageServerRepository.class).Delete(storageServerID);
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            customerRepository = storage.GetRepository(ICustomerRepository.class);
+            if (customerRepository.IsCustomerHaveRole(customerRepository.Get(principal.getName()), "admin")) {
+                storage.GetRepository(IStorageServerRepository.class).Delete(storageServerID);
+                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
+            }
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(result));
         }
         catch (Exception exception) {
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
