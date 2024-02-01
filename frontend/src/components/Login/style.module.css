@@ -39,5 +39,17 @@
 .loginTextInputsWrapper > * {
   margin-top: 7%;
 }
+.loginTextInputsWrapper > a {
+  text-decoration: none;
+  color: #464D5C;
+  text-align: center;
+  font-family: "TTNormsPro", "sans-serif";
+  font-weight: bold;
+  font-size: 18px;
+  transition: color 200ms ease-out;
+}
+.loginTextInputsWrapper > a:hover {
+  color: rgba(70, 77, 92, 0.2);
+}
 
 /*# sourceMappingURL=style.module.css.map */

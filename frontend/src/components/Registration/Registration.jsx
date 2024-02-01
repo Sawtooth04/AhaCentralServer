@@ -5,8 +5,10 @@ import styles from "./style.module.css";
 import TextInput from "../UI/TextInput/TextInput";
 import Button from "../UI/Button/Button";
 import ErrorMessage from "../UI/ErrorMessage/ErrorMessage";
+import {Link, useNavigate} from "react-router-dom";
 
 const Registration = () => {
+    const navigate = useNavigate();
     const [errors, setErrors] = useState({
         'isNameFree': true,
         'isNameValid': true,
@@ -26,7 +28,7 @@ const Registration = () => {
         });
 
         if (response.ok)
-            console.log('harosh, harosh')
+            navigate('/login');
         else
             setErrors(await response.json());
     }
@@ -43,6 +45,7 @@ const Registration = () => {
                 <TextInput placeholder={"Логин"} type={'text'} inputRef={loginRef}/>
                 <TextInput placeholder={"Пароль"} type={'password'} inputRef={passwordRef}/>
                 <Button text={'Регистрация'} onClick={registration}/>
+                <Link to={'/login'}> Уже есть аккаунт? Войти. </Link>
                 <ErrorMessage isHidden={errors.isNameFree} message={'Имя пользователя уже занято'}/>
                 <ErrorMessage isHidden={errors.isNameValid} message={'Имя пользователя должно содержать от 8 до 32 символов'}/>
                 <ErrorMessage isHidden={errors.isPasswordValid} message={'Пароль пользователя должен содержать от 8 до 20 символов'}/>

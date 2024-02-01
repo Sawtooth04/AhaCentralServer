@@ -5,8 +5,10 @@ import Button from "../UI/Button/Button";
 import CsrfFetch from "../../utils/CsrfFetch";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
 import ErrorMessage from "../UI/ErrorMessage/ErrorMessage";
+import {Link, useNavigate} from "react-router-dom";
 
 const Login = () => {
+    const navigate = useNavigate();
     const [isErrorHidden, setIsErrorHidden] = useState(true);
     const loginRef = useRef(null);
     const passwordRef = useRef(null);
@@ -22,7 +24,7 @@ const Login = () => {
         });
 
         if (response.ok)
-            console.log('harosh, harosh')
+            navigate('/');
         else
             setIsErrorHidden(false);
     }
@@ -39,6 +41,7 @@ const Login = () => {
                 <TextInput placeholder={"Логин"} type={'text'} inputRef={loginRef}/>
                 <TextInput placeholder={"Пароль"} type={'password'} inputRef={passwordRef}/>
                 <Button text={'Войти'} onClick={login}/>
+                <Link to={'/registration'}> У вас нет аккаунта? Регистрация. </Link>
                 <ErrorMessage isHidden={isErrorHidden} message={'Пользователь с таким логином и паролем не найден'}/>
             </div>
         </div>
