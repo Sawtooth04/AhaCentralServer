@@ -1,4 +1,4 @@
-.filesButton {
+.hintButton {
   position: relative;
   width: auto;
   height: 83%;
@@ -6,18 +6,24 @@
   cursor: pointer;
 }
 
-.filesButtonDisable {
-  composes: filesButton;
+.hintButtonDisable {
+  composes: hintButton;
   opacity: 0.5;
   cursor: default;
 }
 
-.filesButtonImage {
+.hintButtonText {
+  composes: hintButtonText from "./style-media.module.scss";
+  font-family: "TTNormsPro", "sans-serif";
+}
+
+.hintButtonImage {
   width: auto;
   height: 100%;
 }
 
-.filesButtonHint {
+.hintButtonHint {
+  composes: hintButtonHint from "./style-media.module.scss";
   display: none;
   position: absolute;
   left: 50%;
@@ -28,12 +34,11 @@
   border: #CDCDCD 0.1vw solid;
   border-radius: 0.4em;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
   white-space: nowrap;
   transition: opacity 200ms ease-out;
 }
 
-.filesButton:hover .filesButtonHint {
+.hintButton:hover .hintButtonHint {
   display: block;
 }
 

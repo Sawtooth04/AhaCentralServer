@@ -24,10 +24,10 @@
 }
 
 .groupsHeaderText {
-  width: 20%;
+  composes: groupsHeaderText from "./style-media.module.scss";
+  width: 33%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
 }
 
 .groups {

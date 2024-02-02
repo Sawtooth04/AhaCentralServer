@@ -19,11 +19,11 @@
 }
 
 .registrationSign {
+  composes: registrationSign from "./style-media.module.scss";
   margin: 0 0.15em;
   color: #464D5C;
   font-family: "TTNormsPro", "sans-serif";
   font-weight: bold;
-  font-size: 36px;
 }
 
 .registrationSign:first-child, .registrationSign:last-child {
@@ -31,6 +31,7 @@
 }
 
 .registrationTextInputsWrapper {
+  composes: registrationTextInputsWrapper from "./style-media.module.scss";
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -45,7 +46,6 @@
   text-align: center;
   font-family: "TTNormsPro", "sans-serif";
   font-weight: bold;
-  font-size: 18px;
   transition: color 200ms ease-out;
 }
 .registrationTextInputsWrapper > a:hover {

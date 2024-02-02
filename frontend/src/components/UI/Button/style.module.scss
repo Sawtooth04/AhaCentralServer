@@ -1,14 +1,14 @@
 @import "../../../colors";
 
 .button {
+  composes: button from "./style-media.module.scss";
   width: 60%;
-  height: 3.7vh;
+  height: 3.3vh;
   background-color: inherit;
   border: $first_color 0.15vw solid;
-  border-radius: 0.5em;
+  border-radius: 0.3em;
   outline: none;
   font-family: "TTNormsPro SemiBold", "sans-serif";
-  font-size: 24px;
   transition: border-color 200ms ease-out;
   cursor: pointer;
 }

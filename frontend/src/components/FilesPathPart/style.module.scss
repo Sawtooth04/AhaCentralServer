@@ -1,10 +1,10 @@
 @import "../../colors";
 
 .filePartPath {
+  composes: filePartPath from "./style-media.module.scss";
   position: relative;
   margin: 0 0 0 0.5%;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
   cursor: pointer;
 }
 

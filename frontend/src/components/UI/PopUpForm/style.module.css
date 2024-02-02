@@ -33,10 +33,10 @@
 }
 
 .popUpFormContentHeader {
+  composes: popUpFormContentHeader from "./style-media.module.scss";
   margin: 3% 0 0 0;
   font-family: "TTNormsPro SemiBold", "sans-serif";
   font-weight: normal;
-  font-size: 24px;
 }
 
 /*# sourceMappingURL=style.module.css.map */

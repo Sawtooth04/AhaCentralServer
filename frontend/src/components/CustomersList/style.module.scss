@@ -24,10 +24,14 @@
 }
 
 .customersListHeaderText {
-  width: 20%;
+  composes: customersListHeaderText from "./style-media.module.scss";
+  width: 23%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
+}
+
+.customersListHeaderText:first-child {
+  width: 30%;
 }
 
 .customers {

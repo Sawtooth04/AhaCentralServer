@@ -1,13 +1,15 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.authentication.Authentication;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponseWrapper;
+import org.apache.catalina.connector.Response;
 import org.springframework.hateoas.RepresentationModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.concurrent.CompletableFuture;
@@ -22,13 +24,27 @@ public class AuthenticationController {
     @ResponseBody
     @Async
     public CompletableFuture<ResponseEntity<RepresentationModel<Authentication>>> Get(Principal principal) {
-        Authentication authentication = new Authentication();
+        Authentication result = new Authentication();
 
-        authentication.add(linkTo(methodOn(AuthenticationController.class).Get(null)).withSelfRel());
+        result.add(linkTo(methodOn(AuthenticationController.class).Get(null)).withSelfRel());
         if (principal != null) {
-            authentication.isAuthenticated = true;
-            authentication.name = principal.getName();
+            result.isAuthenticated = true;
+            result.name = principal.getName();
         }
-        return CompletableFuture.completedFuture(ResponseEntity.ok(authentication));
+        return CompletableFuture.completedFuture(ResponseEntity.ok(result));
+    }
+
+    @PostMapping("/logout")
+    @ResponseBody
+    @Async
+    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Logout(HttpServletResponse response) {
+        RepresentationModel<?> result = new RepresentationModel<>();
+        Cookie cookie = new Cookie("JSESSIONID", "");
+
+        result.add(linkTo(methodOn(AuthenticationController.class).Logout(new Response())).withSelfRel());
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+        return CompletableFuture.completedFuture(ResponseEntity.ok(result));
     }
 }

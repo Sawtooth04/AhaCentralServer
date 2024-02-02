@@ -7,10 +7,10 @@
 }
 
 .filesUploadsHeading {
+  composes: filesUploadsHeading from "./style-media.module.scss";
   margin: 2.7vh 0 2.7vh 2%;
   font-family: "TTNormsPro SemiBold", "sans-serif";
   font-weight: normal;
-  font-size: 24px;
 }
 
 /*# sourceMappingURL=style.module.css.map */

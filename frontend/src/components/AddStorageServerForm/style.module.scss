@@ -21,8 +21,8 @@
 }
 
 .storageServerStatusListHeader {
+  composes: storageServerStatusListHeader from "./style-media.module.scss";
   width: 20vw;
   margin: 0;
   font-family: "TTNormsPro SemiBold", "sans-serif";
-  font-size: 20px;
 }

@@ -21,11 +21,11 @@
 }
 
 .loginSign {
+  composes: loginSign from "./style-media.module.scss";
   margin: 0 0.15em;
   color: $first_color;
   font-family: "TTNormsPro", "sans-serif";
   font-weight: bold;
-  font-size: 36px;
 }
 
 .loginSign:first-child, .loginSign:last-child {
@@ -33,6 +33,7 @@
 }
 
 .loginTextInputsWrapper {
+  composes: loginTextInputsWrapper from "./style-media.module.scss";
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -48,7 +49,6 @@
     text-align: center;
     font-family: "TTNormsPro", "sans-serif";
     font-weight: bold;
-    font-size: 18px;
     transition: color 200ms ease-out;
   }
 

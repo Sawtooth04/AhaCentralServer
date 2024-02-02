@@ -1,0 +1,11 @@
+@media (min-width: 320px) and (max-width: 1024px) {
+  .sidebar {
+    min-width: 38%;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 2560px) {
+  .sidebar {
+    min-width: 19%;
+  }
+}

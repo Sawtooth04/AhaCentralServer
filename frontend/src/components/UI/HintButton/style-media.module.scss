@@ -1,0 +1,59 @@
+@media (max-width: 425px) {
+  .hintButtonText {
+    font-size: 13px;
+  }
+
+  .hintButtonHint {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 426px) and (max-width: 768px) {
+  .hintButtonText {
+    font-size: 15px;
+  }
+
+  .hintButtonHint {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hintButtonText {
+    font-size: 17px;
+  }
+
+  .hintButtonHint {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .hintButtonText {
+    font-size: 19px;
+  }
+
+  .hintButtonHint {
+    font-size: 18px;
+  }
+}
+
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .hintButtonText {
+    font-size: 21px;
+  }
+
+  .hintButtonHint {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1920px) and (max-width: 2560px) {
+  .hintButtonText {
+    font-size: 23px;
+  }
+
+  .hintButtonHint {
+    font-size: 22px;
+  }
+}

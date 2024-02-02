@@ -34,10 +34,14 @@
 }
 
 .customersListItemText {
-  width: 20%;
+  composes: customersListItemText from "./style-media.module.scss";
+  width: 23%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
+}
+
+.customersListItemText:first-child {
+  width: 30%;
 }
 
 /*# sourceMappingURL=style.module.css.map */

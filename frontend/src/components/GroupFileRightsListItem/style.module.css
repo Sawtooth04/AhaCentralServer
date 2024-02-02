@@ -7,10 +7,10 @@
 }
 
 .groupName {
+  composes: groupName from "./style-media.module.scss";
   width: 20%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
 }
 
 .fileRightsWrapperHidden {
@@ -27,11 +27,11 @@
 }
 
 .fileRight {
+  composes: fileRight from "./style-media.module.scss";
   width: 95%;
   margin: 0.92vh 0 0 5%;
   opacity: 0.5;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 18px;
   transition: opacity 200ms ease-out;
 }
 

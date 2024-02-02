@@ -1,0 +1,56 @@
+@media (max-width: 425px) {
+  .groupName {
+    font-size: 10px;
+  }
+
+  .fileRight {
+    font-size: 8px;
+  }
+}
+@media (min-width: 426px) and (max-width: 768px) {
+  .groupName {
+    font-size: 12px;
+  }
+
+  .fileRight {
+    font-size: 10px;
+  }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .groupName {
+    font-size: 14px;
+  }
+
+  .fileRight {
+    font-size: 12px;
+  }
+}
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .groupName {
+    font-size: 16px;
+  }
+
+  .fileRight {
+    font-size: 14px;
+  }
+}
+@media (min-width: 1441px) and (max-width: 1920px) {
+  .groupName {
+    font-size: 20px;
+  }
+
+  .fileRight {
+    font-size: 18px;
+  }
+}
+@media (min-width: 1920px) and (max-width: 2560px) {
+  .groupName {
+    font-size: 22px;
+  }
+
+  .fileRight {
+    font-size: 20px;
+  }
+}
+
+/*# sourceMappingURL=style-media.module.css.map */

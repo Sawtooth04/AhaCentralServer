@@ -1,11 +1,11 @@
 .storageServerStatusListItem {
+  composes: storageServerStatusListItem from "./style-media.module.scss";
   position: relative;
   width: 96%;
   height: 2.5vh;
   margin: 0 0 0.92vh 0;
   padding: 0 2%;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
   cursor: pointer;
 }
 

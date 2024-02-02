@@ -2,7 +2,6 @@ import React, {useCallback, useEffect, useState} from 'react';
 import styles from "./style.module.css";
 import buildCsrfXhr from "../../utils/CsrfXhr";
 import CentralServerLinksProvider from "../../utils/CentralServerLinksProvider";
-import FilesButton from "../UI/FilesButton/FilesButton";
 
 const FilesUploadsListItem = ({ item, onClick, deleteUpload }) => {
     const [isResultError, setIsResultError] = useState(false);

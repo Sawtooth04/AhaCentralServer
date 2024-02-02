@@ -1,6 +1,8 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.main.MainResponse;
+import jakarta.servlet.http.HttpServletResponse;
+import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -23,6 +25,7 @@ public class MainController {
 
         result.add(linkTo(methodOn(MainController.class).Main()).withSelfRel());
         result.add(linkTo(methodOn(AuthenticationController.class).Get(null)).withRel("auth-get"));
+        result.add(linkTo(methodOn(AuthenticationController.class).Logout(new Response())).withRel("auth-logout"));
         result.add(linkTo(methodOn(LoginController.class).Login(null, null)).withRel("login"));
         result.add(linkTo(methodOn(ChunkController.class).Synchronize(null, null)).withRel("chunk-sync"));
         result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("file-put"));

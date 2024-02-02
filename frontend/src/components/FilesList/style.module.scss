@@ -24,10 +24,14 @@
 }
 
 .directoryItemsHeaderText {
-  width: 20%;
+  composes: directoryItemsHeaderText from "./style-media.module.scss";
+  width: 18.75%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
+}
+
+.directoryItemsHeaderText:first-child {
+  width: 25%;
 }
 
 .files {

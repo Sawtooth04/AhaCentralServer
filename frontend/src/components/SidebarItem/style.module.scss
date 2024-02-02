@@ -32,7 +32,7 @@
 }
 
 .sidebarItemText {
+  composes: sidebarItemText from "./style-media.module.scss";
   font-family: "TTNormsPro SemiBold", "sans-serif";
-  font-size: 18px;
   margin-left: 5%;
 }

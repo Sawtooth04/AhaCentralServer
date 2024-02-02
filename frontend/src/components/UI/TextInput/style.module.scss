@@ -1,15 +1,15 @@
 @import "../../../colors";
 
 .textInput {
+  composes: textInput from "./style-media.module.scss";
   width: 94%;
-  height: 3.7vh;
+  height: 3.3vh;
   padding: 0 3%;
   background-color: inherit;
   border: $first_color 0.15vw solid;
-  border-radius: 0.5em;
+  border-radius: 0.3em;
   outline: none;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 24px;
   transition: border-color 200ms ease-out;
 }
 

@@ -33,10 +33,20 @@
 }
 
 .directoryItemText {
-  width: 20%;
+  composes: directoryItemText from "./style-media.module.scss";
+  width: 18.75%;
   margin: 0;
   font-family: "TTNormsPro", "sans-serif";
-  font-size: 20px;
+  word-break: break-all;
+}
+
+.directoryItemCenteredText {
+  composes: directoryItemText;
+  text-align: center;
+}
+
+.directoryItemText:first-child {
+  width: 25%;
 }
 
 /*# sourceMappingURL=style.module.css.map */
