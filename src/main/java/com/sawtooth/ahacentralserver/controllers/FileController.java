@@ -3,7 +3,6 @@ package com.sawtooth.ahacentralserver.controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
-import com.sawtooth.ahacentralserver.models.customer.Customer;
 import com.sawtooth.ahacentralserver.models.file.DirectoryItems;
 import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.file.FileUploadModel;
@@ -35,6 +34,9 @@ import java.security.Principal;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/api/file")
 public class FileController {
@@ -63,35 +65,16 @@ public class FileController {
             .replaceAll("(.*/)", "");
     }
 
-    /*@PutMapping("/file/put")
-    @Async
-    @ResponseBody
-    public CompletableFuture<ResponseEntity<RepresentationModel<?>>> Put(FileUploadModel model, Principal principal) {
-        RepresentationModel<?> result = new RepresentationModel<>();
-        File file;
-
-        try {
-            model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
-            if (storage.GetRepository(IFileRepository.class).IsFileExists(model.file().getOriginalFilename(), model.path())) {
-                file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.file().getOriginalFilename());
-                if (!fileRightResolver.Resolve("write", principal.getName(), file))
-                    return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(result));
-                if (fileUpdater.Update(model, file))
-                    return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
-            }
-            else if (fileUploader.Upload(model, storage.GetRepository(ICustomerRepository.class).Get(principal.getName()).customerID()))
-                return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.CREATED).body(result));
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
-        }
-        catch (Exception exception) {
-            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(result));
-        }
-    }*/
-
     private ResponseEntity<RepresentationModel<?>> PutCallable(FileUploadModel model, Principal principal) {
         RepresentationModel<?> result = new RepresentationModel<>();
         File file;
 
+        result.add(linkTo(methodOn(FileController.class).Put(null, null)).withSelfRel());
+        result.add(linkTo(methodOn(FileController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(FileController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(FileController.class).Delete()).withRel("delete"));
+        result.add(linkTo(methodOn(FileController.class).GetAll()).withRel("get-all"));
+        result.add(linkTo(methodOn(FileController.class).GetDirectories()).withRel("get-directories"));
         try {
             model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
             if (storage.GetRepository(IFileRepository.class).IsFileExists(model.file().getOriginalFilename(), model.path())) {
@@ -164,6 +147,12 @@ public class FileController {
         ObjectMapper objectMapper = new ObjectMapper();
         File file;
 
+        result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("put"));
+        result.add(linkTo(methodOn(FileController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(FileController.class).Patch()).withSelfRel());
+        result.add(linkTo(methodOn(FileController.class).Delete()).withRel("delete"));
+        result.add(linkTo(methodOn(FileController.class).GetAll()).withRel("get-all"));
+        result.add(linkTo(methodOn(FileController.class).GetDirectories()).withRel("get-directories"));
         try {
             file = storage.GetRepository(IFileRepository.class).Get(path, name);
             if (!fileRightResolver.Resolve("write", principal.getName(), file))
@@ -195,6 +184,12 @@ public class FileController {
         String path = filePathProcessor.GetFilePath(request, "/api/file/file/delete"), name = GetFileName(request);
         File file;
 
+        result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("put"));
+        result.add(linkTo(methodOn(FileController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(FileController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(FileController.class).Delete()).withSelfRel());
+        result.add(linkTo(methodOn(FileController.class).GetAll()).withRel("get-all"));
+        result.add(linkTo(methodOn(FileController.class).GetDirectories()).withRel("get-directories"));
         try {
             file = storage.GetRepository(IFileRepository.class).Get(path, name);
             if (!fileRightResolver.Resolve("write", principal.getName(), file))
@@ -228,6 +223,12 @@ public class FileController {
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
 
+        result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("put"));
+        result.add(linkTo(methodOn(FileController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(FileController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(FileController.class).Delete()).withRel("delete"));
+        result.add(linkTo(methodOn(FileController.class).GetAll()).withSelfRel());
+        result.add(linkTo(methodOn(FileController.class).GetDirectories()).withRel("get-directories"));
         try {
             fileRepository = storage.GetRepository(IFileRepository.class);
             result.items = fileRepository.GetDirectories(path);
@@ -254,6 +255,12 @@ public class FileController {
         DirectoryItems result = new DirectoryItems();
         IFileRepository fileRepository;
 
+        result.add(linkTo(methodOn(FileController.class).Put(null, null)).withRel("put"));
+        result.add(linkTo(methodOn(FileController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(FileController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(FileController.class).Delete()).withRel("delete"));
+        result.add(linkTo(methodOn(FileController.class).GetAll()).withRel("get-all"));
+        result.add(linkTo(methodOn(FileController.class).GetDirectories()).withSelfRel());
         try {
             fileRepository = storage.GetRepository(IFileRepository.class);
             result.items = fileRepository.GetDirectories(path);

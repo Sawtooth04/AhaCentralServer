@@ -8,6 +8,7 @@ import com.sawtooth.ahacentralserver.services.chunksynchronizer.IChunkSynchroniz
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.catalina.connector.Request;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.concurrent.CompletableFuture;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/api/chunk")
@@ -39,6 +43,8 @@ public class ChunkController {
         StorageServer server;
         RepresentationModel<?> result = new RepresentationModel<>();
 
+        result.add(linkTo(methodOn(ChunkController.class).Synchronize(null, new Request(null))).withSelfRel());
+        result.add(linkTo(methodOn(ChunkController.class).UploadMissing(null)).withRel("upload-missing"));
         try {
             server = storage.GetRepository(IStorageServerRepository.class).Get(String.join(":",
                 request.getRemoteAddr(), Integer.toString(model.port())));
@@ -58,6 +64,8 @@ public class ChunkController {
         StorageServer server;
         RepresentationModel<?> result = new RepresentationModel<>();
 
+        result.add(linkTo(methodOn(ChunkController.class).Synchronize(null, new Request(null))).withRel("synchronize"));
+        result.add(linkTo(methodOn(ChunkController.class).UploadMissing(null)).withSelfRel());
         try {
             server = storage.GetRepository(IStorageServerRepository.class).Get(model.serverID());
             if (chunkMissingUploader.UploadMissing(server))

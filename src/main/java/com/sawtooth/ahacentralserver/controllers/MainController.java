@@ -1,7 +1,6 @@
 package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.main.MainResponse;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.connector.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

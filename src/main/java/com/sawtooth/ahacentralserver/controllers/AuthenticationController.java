@@ -3,10 +3,8 @@ package com.sawtooth.ahacentralserver.controllers;
 import com.sawtooth.ahacentralserver.models.authentication.Authentication;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.catalina.connector.Response;
 import org.springframework.hateoas.RepresentationModel;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +25,7 @@ public class AuthenticationController {
         Authentication result = new Authentication();
 
         result.add(linkTo(methodOn(AuthenticationController.class).Get(null)).withSelfRel());
+        result.add(linkTo(methodOn(AuthenticationController.class).Logout(new Response())).withRel("logout"));
         if (principal != null) {
             result.isAuthenticated = true;
             result.name = principal.getName();
@@ -42,6 +41,7 @@ public class AuthenticationController {
         Cookie cookie = new Cookie("JSESSIONID", "");
 
         result.add(linkTo(methodOn(AuthenticationController.class).Logout(new Response())).withSelfRel());
+        result.add(linkTo(methodOn(AuthenticationController.class).Get(null)).withRel("get"));
         cookie.setMaxAge(0);
         cookie.setPath("/");
         response.addCookie(cookie);

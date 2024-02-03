@@ -39,6 +39,8 @@ public class CentralServerController {
         General result = new General();
         StorageServersSpace storageServersSpace;
 
+        result.add(linkTo(methodOn(CentralServerController.class).General()).withSelfRel());
+        result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withRel("available"));
         try {
             IStorageServerRepository storageServerRepository = storage.GetRepository(IStorageServerRepository.class);
             storageServersSpace = storageServersManager.GetStorageServersSpace();
@@ -61,8 +63,9 @@ public class CentralServerController {
     public CompletableFuture<ResponseEntity<AvailableStorageServers>> AvailableStorageServers() {
         AvailableStorageServers result = new AvailableStorageServers();
 
+        result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withSelfRel());
+        result.add(linkTo(methodOn(CentralServerController.class).General()).withRel("general"));
         try {
-            result.add(linkTo(methodOn(CentralServerController.class).AvailableStorageServers()).withSelfRel());
             result.servers = storageServersManager.GetAvailableStorageServers();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }

@@ -4,23 +4,17 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.sawtooth.ahacentralserver.models.customer.Customer;
-import com.sawtooth.ahacentralserver.models.file.File;
 import com.sawtooth.ahacentralserver.models.group.Group;
 import com.sawtooth.ahacentralserver.models.group.GroupAddModel;
 import com.sawtooth.ahacentralserver.models.group.Groups;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
-import com.sawtooth.ahacentralserver.storage.repositories.file.IFileRepository;
-import com.sawtooth.ahacentralserver.storage.repositories.group.GroupRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.group.IGroupRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
@@ -54,8 +48,12 @@ public class GroupController {
         Groups result = new Groups();
         Customer customer;
 
+        result.add(linkTo(methodOn(GroupController.class).Get(null)).withSelfRel());
+        result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withRel("get-own"));
+        result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withRel("add"));
+        result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("delete"));
         try {
-            result.add(linkTo(methodOn(GroupController.class).Get(null)).withSelfRel());
             customer = storage.GetRepository(ICustomerRepository.class).Get(principal.getName());
             result.groups = storage.GetRepository(IGroupRepository.class).Get(customer);
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
@@ -72,8 +70,12 @@ public class GroupController {
         Groups result = new Groups();
         Customer customer;
 
+        result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("get"));
+        result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withSelfRel());
+        result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withRel("add"));
+        result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("delete"));
         try {
-            result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withSelfRel());
             customer = storage.GetRepository(ICustomerRepository.class).Get(principal.getName());
             result.groups = storage.GetRepository(IGroupRepository.class).GetOwn(customer);
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
@@ -90,8 +92,12 @@ public class GroupController {
         RepresentationModel<?> result = new RepresentationModel<>();
         Customer customer;
 
+        result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("get"));
+        result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withRel("get-own"));
+        result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withSelfRel());
+        result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("delete"));
         try {
-            result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withSelfRel());
             customer = storage.GetRepository(ICustomerRepository.class).Get(principal.getName());
             storage.GetRepository(IGroupRepository.class).Add(customer, new Group(-1, model.name(),  -1,
                 customer.name()));
@@ -116,6 +122,11 @@ public class GroupController {
         Group group;
         ObjectMapper objectMapper = new ObjectMapper();
 
+        result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("get"));
+        result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withRel("get-own"));
+        result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withRel("add"));
+        result.add(linkTo(methodOn(GroupController.class).Patch()).withSelfRel());
+        result.add(linkTo(methodOn(GroupController.class).Delete()).withRel("delete"));
         try {
             group = storage.GetRepository(IGroupRepository.class).Get(GetGroupID(request));
             storage.GetRepository(IGroupRepository.class).Update(objectMapper.treeToValue(patch.apply(
@@ -143,6 +154,11 @@ public class GroupController {
         RepresentationModel<?> result = new RepresentationModel<>();
         Group group;
 
+        result.add(linkTo(methodOn(GroupController.class).Get(null)).withRel("get"));
+        result.add(linkTo(methodOn(GroupController.class).GetOwn(null)).withRel("get-own"));
+        result.add(linkTo(methodOn(GroupController.class).Add(null, null)).withRel("add"));
+        result.add(linkTo(methodOn(GroupController.class).Patch()).withRel("patch"));
+        result.add(linkTo(methodOn(GroupController.class).Delete()).withSelfRel());
         try {
             group = storage.GetRepository(IGroupRepository.class).Get(GetGroupID(request));
             storage.GetRepository(IGroupRepository.class).Delete(group);

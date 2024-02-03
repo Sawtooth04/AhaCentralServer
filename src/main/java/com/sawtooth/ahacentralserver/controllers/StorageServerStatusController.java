@@ -2,7 +2,6 @@ package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.storageserverstatus.StorageServerStatuses;
 import com.sawtooth.ahacentralserver.storage.IStorage;
-import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserverstatus.IStorageServerStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,8 +33,8 @@ public class StorageServerStatusController {
     public CompletableFuture<ResponseEntity<StorageServerStatuses>> Get() {
         StorageServerStatuses result = new StorageServerStatuses();
 
+        result.add(linkTo(methodOn(StorageServerStatusController.class).Get()).withSelfRel());
         try {
-            result.add(linkTo(methodOn(StorageServerStatusController.class).Get()).withSelfRel());
             result.statuses = storage.GetRepository(IStorageServerStatusRepository.class).Get();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }

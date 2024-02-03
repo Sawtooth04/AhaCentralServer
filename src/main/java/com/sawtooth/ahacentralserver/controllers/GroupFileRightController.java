@@ -2,7 +2,6 @@ package com.sawtooth.ahacentralserver.controllers;
 
 import com.sawtooth.ahacentralserver.models.customer.Customer;
 import com.sawtooth.ahacentralserver.models.file.File;
-import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRight;
 import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRightDeleteModel;
 import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRightPostModel;
 import com.sawtooth.ahacentralserver.models.groupfileright.GroupFileRights;
@@ -46,9 +45,11 @@ public class GroupFileRightController {
         RepresentationModel<?> result = new RepresentationModel<>();
         File file;
 
+        result.add(linkTo(methodOn(GroupFileRightController.class).Post(null, null)).withSelfRel());
+        result.add(linkTo(methodOn(GroupFileRightController.class).Get(null, null, null)).withRel("get"));
+        result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withRel("delete"));
         try {
             model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
-            result.add(linkTo(methodOn(GroupFileRightController.class).Post(null, null)).withSelfRel());
             file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.fileName());
             if (!fileRightResolver.Resolve("write", principal.getName(), file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));
@@ -68,9 +69,11 @@ public class GroupFileRightController {
         File file;
         Customer customer;
 
+        result.add(linkTo(methodOn(GroupFileRightController.class).Post(null, null)).withRel("post"));
+        result.add(linkTo(methodOn(GroupFileRightController.class).Get(null, null, null)).withSelfRel());
+        result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withRel("delete"));
         try {
             path = filePathProcessor.ReplaceFilePathParts(path);
-            result.add(linkTo(methodOn(GroupFileRightController.class).Get(null, null, null)).withSelfRel());
             file = storage.GetRepository(IFileRepository.class).Get(path, name);
             customer = storage.GetRepository(ICustomerRepository.class).Get(principal.getName());
             result.groupFileRights = storage.GetRepository(IGroupFileRightRepository.class).GetOfOwner(customer, file);
@@ -88,9 +91,11 @@ public class GroupFileRightController {
         RepresentationModel<?> result = new RepresentationModel<>();
         File file;
 
+        result.add(linkTo(methodOn(GroupFileRightController.class).Post(null, null)).withRel("post"));
+        result.add(linkTo(methodOn(GroupFileRightController.class).Get(null, null, null)).withRel("get"));
+        result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withSelfRel());
         try {
             model = model.WithPath(filePathProcessor.ReplaceFilePathParts(model.path()));
-            result.add(linkTo(methodOn(GroupFileRightController.class).Delete(null, null)).withSelfRel());
             file = storage.GetRepository(IFileRepository.class).Get(model.path(), model.fileName());
             if (!fileRightResolver.Resolve("write", principal.getName(), file))
                 return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.FORBIDDEN).body(null));

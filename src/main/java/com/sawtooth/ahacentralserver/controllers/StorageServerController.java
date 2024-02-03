@@ -7,7 +7,6 @@ import com.sawtooth.ahacentralserver.models.storageservercondition.StorageServer
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
 import com.sawtooth.ahacentralserver.storage.repositories.storageserver.IStorageServerRepository;
-import com.sawtooth.ahacentralserver.storage.repositories.storageserverstatus.IStorageServerStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.RepresentationModel;
 import org.springframework.http.HttpStatus;
@@ -53,8 +52,12 @@ public class StorageServerController {
     public CompletableFuture<ResponseEntity<StorageServers>> Get() {
         StorageServers result = new StorageServers();
 
+        result.add(linkTo(methodOn(StorageServerController.class).Get()).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withRel("get-backup"));
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withRel("post"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("get-conditions"));
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null, null)).withRel("delete"));
         try {
-            result.add(linkTo(methodOn(StorageServerController.class).Get()).withSelfRel());
             result.servers = storage.GetRepository(IStorageServerRepository.class).Get();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
@@ -69,8 +72,12 @@ public class StorageServerController {
     public CompletableFuture<ResponseEntity<StorageServers>> GetBackup() {
         StorageServers result = new StorageServers();
 
+        result.add(linkTo(methodOn(StorageServerController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withRel("post"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("get-conditions"));
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null, null)).withRel("delete"));
         try {
-            result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withSelfRel());
             result.servers = storage.GetRepository(IStorageServerRepository.class).GetBackup();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
         }
@@ -86,7 +93,11 @@ public class StorageServerController {
         RepresentationModel<?> result = new RepresentationModel<>();
         ICustomerRepository customerRepository;
 
+        result.add(linkTo(methodOn(StorageServerController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withRel("get-backup"));
         result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("get-conditions"));
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null, null)).withRel("delete"));
         try {
             customerRepository = storage.GetRepository(ICustomerRepository.class);
             if (customerRepository.IsCustomerHaveRole(customerRepository.Get(principal.getName()), "admin")) {
@@ -106,8 +117,11 @@ public class StorageServerController {
     public CompletableFuture<ResponseEntity<RepresentationModel<StorageServersConditions>>> GetConditions() {
         StorageServersConditions result = new StorageServersConditions();
 
-        result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withRel("get-backup"));
         result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withRel("post"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withSelfRel());
+        result.add(linkTo(methodOn(StorageServerController.class).Delete(null, null)).withRel("delete"));
         try {
             List<StorageServer> servers = storage.GetRepository(IStorageServerRepository.class).Get();
             for (StorageServer server : servers)
@@ -126,6 +140,10 @@ public class StorageServerController {
         RepresentationModel<?> result = new RepresentationModel<>();
         ICustomerRepository customerRepository;
 
+        result.add(linkTo(methodOn(StorageServerController.class).Get()).withRel("get"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetBackup()).withRel("get-backup"));
+        result.add(linkTo(methodOn(StorageServerController.class).Post(null, null)).withRel("post"));
+        result.add(linkTo(methodOn(StorageServerController.class).GetConditions()).withRel("get-conditions"));
         result.add(linkTo(methodOn(StorageServerController.class).Delete(null, null)).withSelfRel());
         try {
             customerRepository = storage.GetRepository(ICustomerRepository.class);

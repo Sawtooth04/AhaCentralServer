@@ -5,12 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonpatch.JsonPatch;
 import com.sawtooth.ahacentralserver.models.customer.Customer;
 import com.sawtooth.ahacentralserver.models.customer.CustomerInfos;
-import com.sawtooth.ahacentralserver.models.group.Group;
-import com.sawtooth.ahacentralserver.services.customervalidator.abstractions.IValidator;
 import com.sawtooth.ahacentralserver.storage.IStorage;
 import com.sawtooth.ahacentralserver.storage.repositories.customer.ICustomerRepository;
-import com.sawtooth.ahacentralserver.storage.repositories.group.IGroupRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -47,6 +43,9 @@ public class CustomerController {
     public CompletableFuture<ResponseEntity<CustomerInfos>> GetInfo() {
         CustomerInfos result = new CustomerInfos();
 
+        result.add(linkTo(methodOn(CustomerController.class).GetInfo()).withSelfRel());
+        result.add(linkTo(methodOn(CustomerController.class).Patch(null, null, null)).withRel("patch"));
+        result.add(linkTo(methodOn(CustomerController.class).Delete(null, null)).withRel("delete"));
         try {
             result.customerInfos = storage.GetRepository(ICustomerRepository.class).GetInfos();
             return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.OK).body(result));
@@ -65,6 +64,9 @@ public class CustomerController {
         ICustomerRepository customerRepository;
         ObjectMapper objectMapper = new ObjectMapper();
 
+        result.add(linkTo(methodOn(CustomerController.class).GetInfo()).withRel("get"));
+        result.add(linkTo(methodOn(CustomerController.class).Patch(null, null, null)).withSelfRel());
+        result.add(linkTo(methodOn(CustomerController.class).Delete(null, null)).withRel("delete"));
         try {
             customerRepository = storage.GetRepository(ICustomerRepository.class);
             if (customerRepository.IsCustomerHaveRole(customerRepository.Get(principal.getName()), "admin")) {
@@ -92,6 +94,9 @@ public class CustomerController {
         RepresentationModel<?> result = new RepresentationModel<>();
         ICustomerRepository customerRepository;
 
+        result.add(linkTo(methodOn(CustomerController.class).GetInfo()).withRel("get"));
+        result.add(linkTo(methodOn(CustomerController.class).Patch(null, null, null)).withRel("patch"));
+        result.add(linkTo(methodOn(CustomerController.class).Delete(null, null)).withSelfRel());
         try {
             customerRepository = storage.GetRepository(ICustomerRepository.class);
             if (customerRepository.IsCustomerHaveRole(customerRepository.Get(principal.getName()), "admin")) {
