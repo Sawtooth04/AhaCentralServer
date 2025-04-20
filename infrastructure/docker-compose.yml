@@ -1,0 +1,62 @@
+version: '3.8'
+
+name: aha-central
+
+services:
+  central:
+    build:
+      context: ../
+      dockerfile: infrastructure/Dockerfile
+      args:
+        AHA_CENTRAL_PORT: ${AHA_CENTRAL_PORT}
+    container_name: ${AHA_CENTRAL_HOST_NAME}
+    ports:
+      - "8081:${AHA_CENTRAL_PORT}"
+      - "8000:8000"
+    env_file:
+      - ./dev/.env-dev
+    environment:
+      CATALINA_HTTP_PORT: ${AHA_CENTRAL_PORT}
+    networks:
+      - central-network
+    volumes:
+      - aha-central-server-volume:/usr/local/aha
+    depends_on:
+      - postgresql
+
+  postgresql:
+    image: bitnami/postgresql:14.17.0-debian-12-r15
+    container_name: database
+    ports:
+      - "5432:${AHA_CENTRAL_DB_PORT}"
+    env_file:
+      - ./dev/.env-dev
+    environment:
+      POSTGRESQL_USERNAME: ${AHA_CENTRAL_DB_USERNAME}
+      POSTGRESQL_PASSWORD: ${AHA_CENTRAL_DB_PASSWORD}
+      POSTGRESQL_DATABASE: ${AHA_CENTRAL_DB_NAME}
+    networks:
+      - central-network
+    volumes:
+      - aha-central-server-postgresql:/bitnami/postgresql
+
+  frontend:
+    build:
+      context: ../
+      dockerfile: frontend/Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./dev/.env-dev
+    networks:
+      - central-network
+    depends_on:
+      - central
+
+networks:
+  central-network:
+
+volumes:
+  aha-central-server-volume:
+  aha-central-server-postgresql:
